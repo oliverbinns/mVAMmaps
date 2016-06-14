@@ -16,9 +16,9 @@ public_html/css/font-awesome.min.css
 public_html/fonts/
 
 
-# DB settings #
-###############
-settings/db.inc
+# Documentation builds #
+########################
+docs/build/
 
 
 # Sass files #
