@@ -19,15 +19,30 @@ function getData(){
 	});
 }
 
-function APItest(){
-	// Implements the mVAM API example call (#2) from:
-	// http://vam.wfp.org/mvam_monitoring/mvamapi.aspx
+APIresponse = ""
+
+function APIpull(opt){
+	/*
+	Implements an mVAM API call for the dashboard
+	Arguments:
+		opt - required object of API arguments:
+		opt["adm0"] - required string with Admin level 0 (country) name
+		opt["adm1"] - option string with region name
+	*/
+
+	// Parse options and build query string
+	qs = "ADM0_NAME = \'" + opt["adm0"] + "\'"
+	if(typeof(opt["adm1"]) != "undefined"){
+		qs = qs + " AND AdminStrata = \'" + opt["adm1"] + "\'"
+	}
+	qs = qs + " AND IndpVars = \'AdminUnits,IDP_YN\'"
+
+	console.log(qs)
 
 	APIurl = "http://vam.wfp.org/mvam_monitoring/api.aspx"
 	APIdata = {
-		'table': 'pblStatsSum', 
-		'where': 'ADM0_NAME = \'Yemen\' AND VARIABLE=\'FCS\' AND MEAN < 40', 
-		'page': 0
+		'table': "pblStatsSum", 
+		'where': qs
 	}
 
 	var request = $.ajax({
@@ -41,6 +56,7 @@ function APItest(){
 	request.done(function(msg) {
 		console.log("Data returned:")
 		console.log(msg)
+		APIresponse = JSON.parse(msg)
 	});
 	
 	//Fail - callback to errorArticle() to load error message on screen
