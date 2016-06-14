@@ -34,8 +34,9 @@ function drawMap(){
 	gCountries.selectAll(".region")
     	.data(regions.features)
 		.enter().append("path")
-			.attr("class", function(d) { return "region " + d.properties.name; })
+			.attr("class", function(d) { 
+				nm = d.properties.name.replace('\'', '').replace(' ', '').toLowerCase()
+				return "region " + nm; 
+			})
 			.attr("d", path);
-	
 }
- 

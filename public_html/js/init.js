@@ -3,9 +3,9 @@
 var width= 1000
 var height = 800
 var projection = d3.geo.mercator()
-	.center([0,8.4])
-	.rotate([11.8,0])
-    .scale(11000)
+	.center([0,15.5])
+	.rotate([-48.5,0])
+    .scale(4500)
     .translate([width / 2, height / 2]);
 
 //SLE is .center([0,8.4]).rotate([11.8,0]).scale(11000)
@@ -27,5 +27,5 @@ mapData = [
 //Initial run script (document load)
 $(document).ready(function () {
 	console.log("Ready")
-	loadMap(mapData[5])
+	loadMap(mapData[4])
 });
