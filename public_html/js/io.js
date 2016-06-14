@@ -1,4 +1,5 @@
-//Where xxx is the database articleID
+// mVAM data-API call functions
+
 function getData(){
 	var request = $.ajax({
 		type: "POST",

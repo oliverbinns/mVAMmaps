@@ -1,3 +1,5 @@
+// Utility functions
+
 function getRegionNames(){
 	x = $('.region')
 	u = []
@@ -10,14 +12,12 @@ function getRegionNames(){
 		}
 		if(f==false){
 			u.push(x[i].className.baseVal)
-			$('#op').text($('#op').text + "," + u)
+			console.log($('#op').text + "," + u)
 		}
 	}
 
 	return u
 }
-
-
 
 function randomColours(){
 	cols = colorbrewer.RdBu['10']

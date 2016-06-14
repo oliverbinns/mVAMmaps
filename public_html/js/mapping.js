@@ -18,7 +18,7 @@ function loadMap(m){
 
 function drawMap(){
 	// Define SVG elements	
-	var svg = d3.select("#animationHolder").append("svg")
+	var svg = d3.select("#mapHolder").append("svg")
 			.attr("id", "animSVG")
 			.attr("width", width)
 			.attr("height", height);
