@@ -47,6 +47,8 @@ gulp.task('CDNfallback', function(){
 			{src: sPath + "d3/d3.min.js",
 			tgt:  tPath},
 			{src: sPath + "topojson/topojson.min.js",
+			tgt:  tPath},
+			{src: sPath + "colorbrewer/colorbrewer.js",
 			tgt:  tPath}
 		];
 
