@@ -1,7 +1,9 @@
 // Global variables
 // Define D3.js map projection and path handlers
-var width= 500
-var height = 400
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 500 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
 var projection = d3.geo.mercator()
 	.center([0,15.5])
 	.rotate([-48.5,0])
@@ -34,4 +36,5 @@ mapData = [
 $(document).ready(function () {
 	console.log("Ready")
 	getRegions()
+	initGraphs()
 });
