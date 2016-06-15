@@ -1,13 +1,16 @@
 {
   "name": "mvam",
+  "description": "mVAM dashboard",
+  "main": "index.html",
   "authors": [
     "oliverbinns <oliverbinns@gmail.com>"
   ],
-  "description": "",
-  "main": "",
-  "moduleType": [],
   "license": "MIT",
-  "homepage": "",
+  "keywords": [
+    "dashboard"
+  ],
+  "homepage": "https://github.com/oliverbinns/mVAMmaps",
+  "moduleType": [],
   "private": true,
   "ignore": [
     "**/.*",
@@ -15,5 +18,14 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "jquery": "^2.2.3",
+    "d3": "^3.5.17",
+    "font-awesome": "fontawesome#^4.6.3",
+    "colorbrewer": "^1.0.0",
+    "picturefill": "^3.0.2",
+    "topojson": "^1.6.26",
+    "moment": "^2.13.0"
+  }
 }
