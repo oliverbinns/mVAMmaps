@@ -31,5 +31,5 @@ mapData = [
 // Initial run script (document load)
 $(document).ready(function () {
 	console.log("Ready")
-	loadMap(mapData[2])
+	getRegions()
 });

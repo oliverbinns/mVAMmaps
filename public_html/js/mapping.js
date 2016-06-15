@@ -10,16 +10,16 @@ function loadMap(m){
 		
 		//Call the map drawing function (below)
 		console.log(topology)
-		drawMap()
+		drawMap(m)
 
 	});
 }
 
 
-function drawMap(){
+function drawMap(m){
 	// Define SVG elements	
 	var svg = d3.select("#mapHolder").append("svg")
-			.attr("id", "animSVG")
+			.attr("id", "map-" + m.tName)
 			.attr("width", width)
 			.attr("height", height);
 			

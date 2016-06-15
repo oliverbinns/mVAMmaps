@@ -1,0 +1,36 @@
+{
+	"adm0":[
+		{
+			"name" : "Yemen",
+			"mapFile" : "/data/baseMap/admin1_topo_YEM.json",
+			"topologyName":"admin1_YEM",
+			"adm1":[
+				"Ad Dali",
+				"Al Bayda",
+				"Al Hudaydah",
+				"Al Mahwit",
+				"Amran",
+				"Dhamar",
+				"Hajjah",
+				"Ibb",
+				"Lahj",
+				"Marib",
+				"Raymah",
+				"Sana'a",
+				"Shabwah",
+				"Aljanad",
+				"Azal",
+				"Hadramaut",
+				"Sheba",
+				"Tahamh",
+				"Abyan",
+				"Aden",
+				"Al Jawf",
+				"Al Maharah",
+				"Sa'dah",
+				"Sana'a City",
+				"Taizz"
+			]
+		}	
+	]
+}

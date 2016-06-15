@@ -76,6 +76,8 @@ function getRegions(){
 	request.done(function(msg) {
 		regioMeta = msg
 		console.log("Region metaData returned ok, " + regioMeta.length + " values")
+		// Populate the UI selectors
+		selectorInit()
 	});
 	
 	//Fail - 
