@@ -15,5 +15,23 @@ function loadDashboard() {
 		loadMap(mapData)
 	}
 
+	// Pull the API data (triggers graph redraw)
+	opt = {}
+	opt["adm0"] = regioMeta.adm0[adm0ID].name
+	opt["adm1"] = regioMeta.adm0[adm0ID].adm1[adm1ID]
+	
+	APIresponse = []
+	APIpage = 0
+	APIpull(opt)
+}
+
+function initGraphs(){
+	// Draw initial (empty) graph objects
+
+}
+
+function updateGraphs(){
+	// Update graph objects with new data
+
 }
 

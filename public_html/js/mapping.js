@@ -9,7 +9,6 @@ function loadMap(m){
 		// capitals = topojson.feature(topology, topology.objects.capitals);
 		
 		//Call the map drawing function (below)
-		console.log(topology)
 		drawMap(m)
 
 	});

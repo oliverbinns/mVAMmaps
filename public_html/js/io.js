@@ -33,14 +33,17 @@ function APIpull(opt){
 	if(typeof(opt["adm1"]) != "undefined"){
 		qs = qs + " AND AdminStrata = \'" + opt["adm1"] + "\'"
 	}
-	qs = qs + " AND IndpVars = \'AdminUnits,IDP_YN\'"
-
-	console.log(qs)
+	//qs = qs + " AND IndpVars = \'AdminUnits,IDP_YN\'"
+    qs = qs + " AND IndpVars = \'AdminUnits\'"
+	
+	console.log("Requesting data from API:")
+	console.log("    " + qs + " | page = " + APIpage)
 
 	APIurl = "http://vam.wfp.org/mvam_monitoring/api.aspx"
 	APIdata = {
 		'table': "pblStatsSum", 
-		'where': qs
+		'where': qs,
+		'page': APIpage
 	}
 
 	var request = $.ajax({
@@ -50,13 +53,26 @@ function APIpull(opt){
 		dataType: 'text'
 	});
 	
-	//Success - 
+	//Success - load the graphs with the data
 	request.done(function(msg) {
-		APIresponse = JSON.parse(msg)
-		console.log("API Data returned ok, " + APIresponse.length + " values")
+		//Parse result and concatenate onto the response
+		SVRresp = JSON.parse(msg)
+		APIresponse = APIresponse.concat(SVRresp)
+		
+		console.log("API Data returned ok, " + SVRresp.length + " values, total " + APIresponse.length)
+		
+		// Check all data was returned in this page
+		if(SVRresp.length >= 999 ){
+			console.warn("Potentially not all data collected, getting next page")
+			APIpage++
+			APIpull(opt)
+		} else {
+			console.log("All data collected, building graphs")
+			updateGraphs()
+		}
 	});
 	
-	//Fail - 
+	//Fail - lof to onsole
 	request.fail(function(){
 		console.warn("Error getting API data")
 	});
@@ -72,15 +88,15 @@ function getRegions(){
 		dataType: 'json'
 	});
 	
-	//Success - 
+	//Success - initialise the selectors
 	request.done(function(msg) {
 		regioMeta = msg
-		console.log("Region metaData returned ok, " + regioMeta.length + " values")
+		console.log("Region metaData returned ok, " + regioMeta.adm0.length + " values")
 		// Populate the UI selectors
 		selectorInit()
 	});
 	
-	//Fail - 
+	//Fail - log to console
 	request.fail(function(){
 		console.warn("Error getting region metaData")
 	});

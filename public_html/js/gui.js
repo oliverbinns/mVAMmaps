@@ -11,9 +11,6 @@ function selectorInit(){
 
 	// Reset the admin 1 selector (blank)
 	resetAdmin1()
-
-	// Load the dashboard for the selection
-	loadDashboard()
 }
 
 
@@ -33,7 +30,7 @@ function selectAdmin0(){
 		}		
 		
 		// Load the dashboard for the selection
-		loadDashboard()
+		//loadDashboard()
 
 	} else {
 		// Null selected
@@ -43,7 +40,9 @@ function selectAdmin0(){
 
 function selectAdmin1(){
 	// Load the dashboard for the selection
-	loadDashboard()
+	if($('#ADM1select').val() != 'null'){
+		loadDashboard()
+	}
 }
 
 function resetAdmin1(){
