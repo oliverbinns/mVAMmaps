@@ -28,9 +28,9 @@ function selectAdmin0(){
 			optionTag = '<option value="' + i + '">' + adm1Name + '</option>'
 			$('#ADM1select').append(optionTag)
 		}		
-		
-		// Load the dashboard for the selection
-		//loadDashboard()
+
+		// Load any maps
+		loadDashboard()
 
 	} else {
 		// Null selected

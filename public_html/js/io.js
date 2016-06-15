@@ -30,7 +30,7 @@ function APIpull(opt){
 
 	// Parse options and build query string
 	qs = "ADM0_NAME = \'" + opt["adm0"] + "\'"
-	if(typeof(opt["adm1"]) != "undefined"){
+	if(typeof(opt["adm1"]) != "undefined" && opt["adm1"] != "Entire country"){
 		qs = qs + " AND AdminStrata = \'" + opt["adm1"] + "\'"
 	}
 	//qs = qs + " AND IndpVars = \'AdminUnits,IDP_YN\'"

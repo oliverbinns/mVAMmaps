@@ -1,7 +1,7 @@
 // Global variables
 // Define D3.js map projection and path handlers
-var width= 1000
-var height = 800
+var width= 500
+var height = 400
 var projection = d3.geo.mercator()
 	.center([0,15.5])
 	.rotate([-48.5,0])
