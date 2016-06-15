@@ -19,8 +19,6 @@ function getData(){
 	});
 }
 
-APIresponse = ""
-
 function APIpull(opt){
 	/*
 	Implements an mVAM API call for the dashboard
@@ -52,15 +50,37 @@ function APIpull(opt){
 		dataType: 'text'
 	});
 	
-	//Success - callback to runArticle() to load content into div
+	//Success - 
 	request.done(function(msg) {
-		console.log("Data returned:")
-		console.log(msg)
 		APIresponse = JSON.parse(msg)
+		console.log("API Data returned ok, " + APIresponse.length + " values")
 	});
 	
-	//Fail - callback to errorArticle() to load error message on screen
+	//Fail - 
 	request.fail(function(){
-		console.warn("Error getting data")
+		console.warn("Error getting API data")
 	});
+}
+
+function getRegions(){
+	// Temporary function to pull country data from local cache
+	// future - to be replaced by API pull?
+
+	var request = $.ajax({
+		type: "POST",
+		url: "data/regionMeta.json",
+		dataType: 'json'
+	});
+	
+	//Success - 
+	request.done(function(msg) {
+		regioMeta = msg
+		console.log("Region metaData returned ok, " + regioMeta.length + " values")
+	});
+	
+	//Fail - 
+	request.fail(function(){
+		console.warn("Error getting region metaData")
+	});
+
 }

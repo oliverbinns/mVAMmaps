@@ -1,5 +1,5 @@
-//Global variables
-//Define D3.js map projection and path handlers
+// Global variables
+// Define D3.js map projection and path handlers
 var width= 1000
 var height = 800
 var projection = d3.geo.mercator()
@@ -11,7 +11,11 @@ var projection = d3.geo.mercator()
 //SLE is .center([0,8.4]).rotate([11.8,0]).scale(11000)
 //YEM is .center([0,15.5]).rotate([-48.5,0]).scale(4000)
 
-//Map data files
+// Globals for API data responses
+APIresponse = {}
+regioMeta = {}
+
+// Map data files
 mapData = [
 	{"id":0, "file":"/data/baseMap/admin0_topo.json","tName":"admin0"},
 	{"id":1, "file":"/data/baseMap/admin1_topo_SLE.json","tName":"admin1_SLE"},
@@ -24,8 +28,8 @@ mapData = [
 	{"id":8, "file":"/data/baseMap/roads_topo_YEM.json","tName":"yem_trs_roads_wfp_1"}
 ]
 
-//Initial run script (document load)
+// Initial run script (document load)
 $(document).ready(function () {
 	console.log("Ready")
-	loadMap(mapData[4])
+	loadMap(mapData[2])
 });
