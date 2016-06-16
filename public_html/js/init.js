@@ -17,7 +17,8 @@ var projection = d3.geo.mercator()
 APIresponse = {}
 APIpage = 0
 regioMeta = {}
-
+minDate = 0
+minDate = 0
 
 // Map data files
 mapData = [

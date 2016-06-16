@@ -67,7 +67,18 @@ function APIpull(opt){
 			APIpage++
 			APIpull(opt)
 		} else {
-			console.log("All data collected, building graphs")
+			console.log("All data collected, processing...")
+
+			// Get min/max dates
+			APIdates = []
+			for (var i = 0; i < APIresponse.length; i++) {
+				//Convert to a moment timestamp
+				APIresponse[i].ts = moment(APIresponse[i].SvyDate)
+				APIdates.push(APIresponse[i].ts)
+			}
+			minDate = moment.min(APIdates)
+			maxDate = moment.max(APIdates)
+
 			updateGraphs()
 		}
 	});
