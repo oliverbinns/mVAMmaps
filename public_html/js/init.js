@@ -7,7 +7,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
 var projection = d3.geo.mercator()
 	.center([0,15.5])
 	.rotate([-48.5,0])
-    .scale(4500)
+    .scale(2000)
     .translate([width / 2, height / 2]);
 
 //SLE is .center([0,8.4]).rotate([11.8,0]).scale(11000)

@@ -67,11 +67,50 @@ function initGraphs(){
 
 function updateGraphs(){
 	// Update graph objects with new data
+	console.log("Updating graphs...")
+
+	// Filter the API response as necessary
+	APIfilt = []
+	APIfilt = APIresponse.filter(function (d) {
+		return 	d.Variable == "FCG==1" ||
+				d.Variable == "FCG==2" ||
+				d.Variable == "FCG==3" ||
+				d.Variable == "rCSI" ||
+				d.Variable == "FCS";
+	})
+
+	// TO-DO date filtering based on user control
+
+	//Convert data to time series
+	APIts = []
+	for(var i = 0; i<APIfilt.length; i++){
+		varName = APIfilt[i]["Variable"]
+  		varValue = APIfilt[i]["Mean"]
+
+		ix = APIts.map(function(x) {return x.tsString}).indexOf(APIfilt[i].ts.toISOString());
+  		
+  		if(ix == -1){
+  			//Add the time period and the value associated with it
+  			objts = {}
+  			objts["tsString"] = APIfilt[i].ts.toISOString()
+  			objts["ts"] = APIfilt[i].ts
+  			objts[varName] = varValue
+  			APIts.push(objts)	
+  		} else {
+  			//Append the value to the identified time period
+  			APIts[ix][varName] = varValue
+  		}
+	}
+
+	dateRange = maxDate.diff(minDate,"months") + 1
 
 	// Define d3 scales and axis objects
-	var xScale = d3.scale.ordinal()
-    	.rangeRoundBands([0, width], .1)
-    	.domain([1,2,3,4,5]);
+	var xScale = d3.time.scale()
+    	.range([0, width])
+    	.domain([
+    		minDate.subtract(1,'months').toDate(),
+    		maxDate.add(1,'months').toDate()
+    		]);
 
 	var yScale = d3.scale.linear()
     	.range([height, 0])
@@ -79,7 +118,9 @@ function updateGraphs(){
 
 	var xAxis = d3.svg.axis()
 		.scale(xScale)
-		.orient("bottom");
+		.orient("bottom")
+		.ticks(5)
+	.tickFormat(d3.time.format("%Y-%b"));
 
 	var yAxis = d3.svg.axis()
 		.scale(yScale)
@@ -100,5 +141,39 @@ function updateGraphs(){
 			.attr("dy", ".71em")
 			.style("text-anchor", "end")
 			.text("% population");
+
+	// Calcuate the width of the bars
+	barWidth = (width / (dateRange+2))
+	if(barWidth > 10){
+		// Add padding only if bars are wide enough
+		barWidth = barWidth - (0.1 * barWidth)
+	} 
+	
+	barCols = ["white","red","yellow","green"]
+
+	// Redraw the stacked bars
+	for(var rNo=1;rNo<4;rNo++){
+		console.log(rNo)
+		var r = svg.select("#dataGroup-FCG")
+			.selectAll(".rect" + rNo)
+			.data(APIts)
+    		
+	    r.enter().append("rect")
+			.style("fill", function(){return barCols[rNo]})
+			.attr("class", "rect" + rNo)
+		
+		r.attr("x", function(d) { 
+				return xScale(d.ts.toDate()) - (0.5 * barWidth); 
+				})
+			.attr("width", barWidth)
+			.attr("y", function(d) { 
+				y0 = 0
+				for(var j=rNo;j>0;j--){
+					y0 = y0 + d["FCG==" + j]
+				}
+				return yScale(y0)
+			})
+			.attr("height", function(d) { return height - yScale(d["FCG==" + rNo]); });
+	}
 }
 
