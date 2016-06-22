@@ -102,6 +102,14 @@ function updateGraphs(){
   		}
 	}
 
+	function tsSort(a,b){
+		if(a.ts < b.ts) { return -1 }
+		if(a.ts > b.ts) { return 1 }
+		if(a.ts == b.ts) { return 0}
+	}
+
+	APIts.sort(tsSort)
+
 	dateRange = maxDate.diff(minDate,"months") + 1
 
 	// Define d3 scales and axis objects
@@ -114,7 +122,6 @@ function updateGraphs(){
 
 	var yScale = d3.scale.linear()
     	.range([height, 0])
-    	.domain([0, 1]);
 
 	var xAxis = d3.svg.axis()
 		.scale(xScale)
@@ -128,6 +135,8 @@ function updateGraphs(){
 		.ticks(10, "%");
 
 	// Update FCG graph (bar)
+	yScale.domain([0, 1]);
+
 	svg = d3.select("#svgContentFCG")
 
 	svg.select("#xAxis-FCG")
@@ -153,7 +162,6 @@ function updateGraphs(){
 
 	// Redraw the stacked bars
 	for(var rNo=1;rNo<4;rNo++){
-		console.log(rNo)
 		var r = svg.select("#dataGroup-FCG")
 			.selectAll(".rect" + rNo)
 			.data(APIts)
@@ -175,5 +183,108 @@ function updateGraphs(){
 			})
 			.attr("height", function(d) { return height - yScale(d["FCG==" + rNo]); });
 	}
+
+	//Update FCS graph (line)
+	maxFCS = Math.max.apply(null, APIts.map(function(d){return d.FCS}))
+	minFCS = Math.min.apply(null, APIts.map(function(d){return d.FCS}))
+
+	yScale.domain([(0.9 * minFCS), (maxFCS * 1.1)])
+	yAxis.ticks(10, "");
+
+	svg = d3.select("#svgContentFCS")
+
+	svg.select("#xAxis-FCS")
+		.call(xAxis)
+
+	svg.select("#yAxis-FCS")
+		.call(yAxis)
+		.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 6)
+			.attr("dy", ".71em")
+			.style("text-anchor", "end")
+			.text("FCS");
+
+	// Draw the circles
+	var c = svg.select("#dataGroup-FCS")
+		.selectAll("cicle")
+		.data(APIts)
+		
+    c.enter().append("circle")
+		.style("stroke", "blue")
+		.style("fill", "blue")
+		.attr("class", "lineCircle")
+	
+	c.attr("cx", function(d){return xScale(d.ts.toDate())})
+		.attr("cy", function(d){return yScale(d.FCS)})
+		.attr("r", "2")
+
+	// Add the line
+	var line = d3.svg.line()
+		.x(function(d) { return xScale(d.ts.toDate()) })
+		.y(function(d) { return yScale(d.FCS) })
+
+	var l = svg.select("#dataGroup-FCS")
+		.selectAll("path")
+		.data([APIts])
+		
+	l.enter().append("path")
+		.style("stroke", "blue")
+		.style("fill", "none")
+		.attr("class", "linePath")
+		.attr("d", line)
+
+
+
+	//Update rCSI graph (line)
+	maxrCSS = Math.max.apply(null, APIts.map(function(d){return d.rCSI}))
+	minrCSI = Math.min.apply(null, APIts.map(function(d){return d.rCSI}))
+
+	yScale.domain([(0.9 * minrCSI), (maxrCSS * 1.1)])
+	yAxis.ticks(10, "");
+
+	svg = d3.select("#svgContentrCSI")
+
+	svg.select("#xAxis-rCSI")
+		.call(xAxis)
+
+	svg.select("#yAxis-rCSI")
+		.call(yAxis)
+		.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 6)
+			.attr("dy", ".71em")
+			.style("text-anchor", "end")
+			.text("rCSI");
+
+	// Draw the circles
+	var c = svg.select("#dataGroup-rCSI")
+		.selectAll("circle")
+		.data(APIts)
+		
+    c.enter().append("circle")
+		.style("stroke", "green")
+		.style("fill", "green")
+		.attr("class", "lineCircle")
+	
+	c.attr("cx", function(d){return xScale(d.ts.toDate())})
+		.attr("cy", function(d){return yScale(d.rCSI)})
+		.attr("r", "2")
+
+	// Add the line
+	var line = d3.svg.line()
+		.x(function(d) { return xScale(d.ts.toDate()) })
+		.y(function(d) { return yScale(d.rCSI) })
+
+	var l = svg.select("#dataGroup-rCSI")
+		.selectAll("path")
+		.data([APIts])
+		
+	l.enter().append("path")
+		.style("stroke", "green")
+		.style("fill", "none")
+		.attr("class", "linePath")
+		.attr("d", line)
+
 }
 
