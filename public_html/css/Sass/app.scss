@@ -12,6 +12,20 @@ html {
   font: 10px sans-serif;
 }
 
+.popupText {
+  font: 10px sans-serif;
+}
+
+.popupTitle {
+  font: 10px sans-serif;
+  font-weight: 500;
+}
+
+.popupRect {
+	fill: #ffffff;
+	stroke: orange;
+}
+
 .axis path,
 .axis line {
   fill: none;

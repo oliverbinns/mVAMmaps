@@ -61,6 +61,33 @@ function initGraphs(){
 		// Create a group to hold the bars / lines
 		var dataGrp = svg.append("g")
 			.attr("id", "dataGroup-" + name)
+
+
+		// Create popup box
+		var popGrp = svg.append("g")
+			.attr("id", "popUp-" + name)
+
+		popGrp.append("rect")
+				.attr("class", "popupRect")
+				.attr("id", "popupRect-" + name)
+				.attr("x",0)
+				.attr("y",0)
+				.attr("width",0)
+				.attr("height",0)
+
+		popGrp.append("text")
+				.attr("class", "popupText")
+				.attr("id", "popupText-" + name)
+				.text("")
+				.attr("x",0)
+				.attr("y",0)
+
+		popGrp.append("text")
+				.attr("class", "popupTitle")
+				.attr("id", "popupTitle-" + name)
+				.text("")
+				.attr("x",0)
+				.attr("y",0)
 	}
 
 }
@@ -113,14 +140,14 @@ function updateGraphs(){
 	dateRange = maxDate.diff(minDate,"months") + 1
 
 	// Define d3 scales and axis objects
-	var xScale = d3.time.scale()
+	xScale = d3.time.scale()
     	.range([0, width])
     	.domain([
     		minDate.subtract(1,'months').toDate(),
     		maxDate.add(1,'months').toDate()
     		]);
 
-	var yScale = d3.scale.linear()
+	yScale = d3.scale.linear()
     	.range([height, 0])
 
 	var xAxis = d3.svg.axis()
@@ -205,20 +232,6 @@ function updateGraphs(){
 			.style("text-anchor", "end")
 			.text("FCS");
 
-	// Draw the circles
-	var c = svg.select("#dataGroup-FCS")
-		.selectAll("cicle")
-		.data(APIts)
-		
-    c.enter().append("circle")
-		.style("stroke", "blue")
-		.style("fill", "blue")
-		.attr("class", "lineCircle")
-	
-	c.attr("cx", function(d){return xScale(d.ts.toDate())})
-		.attr("cy", function(d){return yScale(d.FCS)})
-		.attr("r", "2")
-
 	// Add the line
 	var line = d3.svg.line()
 		.x(function(d) { return xScale(d.ts.toDate()) })
@@ -233,6 +246,34 @@ function updateGraphs(){
 		.style("fill", "none")
 		.attr("class", "linePath")
 		.attr("d", line)
+
+	// Draw the circles
+	var c = svg.select("#dataGroup-FCS")
+		.selectAll("cicle")
+		.data(APIts)
+		
+    c.enter().append("circle")
+		.style("stroke", "blue")
+		.style("fill", "blue")
+		.attr("class", "lineCircle")
+	
+	c.attr("cx", function(d){return xScale(d.ts.toDate())})
+		.attr("cy", function(d){return yScale(d.FCS)})
+		.attr("r", "3")
+		.on("mouseover", function(d) { 
+			updatePopup("FCS",d)
+			d3.select(this)
+				.style("fill", "orange")
+				.style("stroke", "orange"); 
+		})
+		.on("mouseout",  function(d) { 
+		    updatePopup("FCS",0)
+		    d3.select(this)
+				.style("fill", "blue")
+				.style("stroke", "blue"); 
+		});
+
+
 
 
 
@@ -257,20 +298,6 @@ function updateGraphs(){
 			.style("text-anchor", "end")
 			.text("rCSI");
 
-	// Draw the circles
-	var c = svg.select("#dataGroup-rCSI")
-		.selectAll("circle")
-		.data(APIts)
-		
-    c.enter().append("circle")
-		.style("stroke", "green")
-		.style("fill", "green")
-		.attr("class", "lineCircle")
-	
-	c.attr("cx", function(d){return xScale(d.ts.toDate())})
-		.attr("cy", function(d){return yScale(d.rCSI)})
-		.attr("r", "2")
-
 	// Add the line
 	var line = d3.svg.line()
 		.x(function(d) { return xScale(d.ts.toDate()) })
@@ -286,5 +313,93 @@ function updateGraphs(){
 		.attr("class", "linePath")
 		.attr("d", line)
 
+	// Draw the circles
+	var c = svg.select("#dataGroup-rCSI")
+		.selectAll("circle")
+		.data(APIts)
+		
+    c.enter().append("circle")
+		.style("stroke", "green")
+		.style("fill", "green")
+		.attr("class", "lineCircle")
+	
+	c.attr("cx", function(d){return xScale(d.ts.toDate())})
+		.attr("cy", function(d){return yScale(d.rCSI)})
+		.attr("r", "3")
+		.on("mouseover", function(d) { 
+			updatePopup("rCSI",d)
+			d3.select(this)
+				.style("fill", "orange")
+				.style("stroke", "orange"); 
+		})
+		.on("mouseout",  function(d) { 
+		    updatePopup("rCSI",0)
+		    d3.select(this)
+				.style("fill", "green")
+				.style("stroke", "green"); 
+		});
+
+
+
 }
 
+function updatePopup(name,d){
+	// Updates the popup with data for the hovered / selected item
+	if(d == 0){
+		// Clear the popup
+		d3.select("#popupText-" + name)
+			.text("")
+		d3.select("#popupTitle-" + name)
+			.text("")
+		d3.select("#popupRect-" + name)
+			.attr("width", 0)
+			.attr("height", 0)
+
+	} else {
+		// Update the popup data
+		val = d[name]
+		valText = name + ": " + d[name]
+		ts = d.ts
+		
+		maxDom = Math.max.apply(null, APIts.map(function(e){return e[name]}))
+		minDom = Math.min.apply(null, APIts.map(function(e){return e[name]}))
+		yScale.domain([(0.9 * minDom), (maxDom * 1.1)])
+
+		pointX = xScale(ts.toDate())
+		pointY = yScale(val)
+
+		spaceRight = width - pointX
+		spaceUp = pointY
+
+		//Select the position
+		pX = 0
+		pY = 0
+		if(spaceRight < (popWidth + popGap)){
+			pX = pointX - (popWidth + popGap)
+		} else {
+			pX = pointX + popGap
+		}
+
+		if(spaceUp < (popHeight + popGap)){
+			pY = pointY + popGap
+		} else {
+			pY = pointY - (popHeight + popGap)
+		}		
+
+		d3.select("#popupTitle-" + name)
+			.text(ts.format("YYYY-MM"))
+			.attr("x", (pX + popTextSize))
+			.attr("y", (pY + popTextSize))
+
+		d3.select("#popupText-" + name)
+			.text(valText)
+			.attr("x", (pX + popTextSize))
+			.attr("y", (pY + (2 * popTextSize)))
+
+		d3.select("#popupRect-" + name)
+			.attr("x",pX)
+			.attr("y",pY)
+			.attr("width", popWidth)
+			.attr("height", popHeight)
+	}
+}

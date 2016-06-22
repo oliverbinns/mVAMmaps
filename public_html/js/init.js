@@ -20,6 +20,12 @@ regioMeta = {}
 minDate = 0
 minDate = 0
 
+// Graph styling globals
+popWidth = 90
+popHeight = 25
+popGap = 5
+popTextSize = 10
+
 // Map data files
 mapData = [
 	{"id":0, "file":"/data/baseMap/admin0_topo.json","tName":"admin0"},
