@@ -29,12 +29,12 @@ function APIpull(opt){
 	*/
 
 	// Parse options and build query string
-	qs = "ADM0_NAME = \'" + opt["adm0"] + "\'"
+	qs = "ADM0_NAME = '" + opt["adm0"] + "'"
 	if(typeof(opt["adm1"]) != "undefined" && opt["adm1"] != "Entire country"){
-		qs = qs + " AND AdminStrata = \'" + opt["adm1"] + "\'"
+		qs = qs + " AND AdminStrata = '" + opt["adm1"] + "'"
 	}
 	//qs = qs + " AND IndpVars = \'AdminUnits,IDP_YN\'"
-    qs = qs + " AND IndpVars = \'AdminUnits\'"
+    qs = qs + " AND IndpVars = 'AdminUnits	'"
 	
 	console.log("Requesting data from API:")
 	console.log("    " + qs + " | page = " + APIpage)
@@ -45,6 +45,9 @@ function APIpull(opt){
 		'where': qs,
 		'page': APIpage
 	}
+
+	// Offline use
+	APIurl = "data/offlineAPIdata.json"
 
 	var request = $.ajax({
 		type: "POST",
@@ -73,7 +76,7 @@ function APIpull(opt){
 			APIdates = []
 			for (var i = 0; i < APIresponse.length; i++) {
 				//Convert to a moment timestamp
-				APIresponse[i].ts = moment(APIresponse[i].SvyDate)
+				APIresponse[i].ts = moment.utc(APIresponse[i].SvyDate)
 				APIdates.push(APIresponse[i].ts)
 			}
 			minDate = moment.min(APIdates)
