@@ -195,7 +195,7 @@ function updateGraphs(){
     		
 	    r.enter().append("rect")
 			.style("fill", function(){return barCols[rNo]})
-			.attr("class", "rect" + rNo)
+			.attr("class", "FCG==" + rNo)
 		
 		r.attr("x", function(d) { 
 				return xScale(d.ts.toDate()) - (0.5 * barWidth); 
@@ -208,7 +208,17 @@ function updateGraphs(){
 				}
 				return yScale(y0)
 			})
-			.attr("height", function(d) { return height - yScale(d["FCG==" + rNo]); });
+			.attr("height", function(d) { return height - yScale(d["FCG==" + rNo]); })
+			.on("mouseover", function(d) { 
+				updatePopup(d3.select(this).attr('class'),d)
+				d3.select(this)
+					.style("stroke", "orange"); 
+			})
+			.on("mouseout",  function(d) { 
+				updatePopup(d3.select(this).attr('class'),0)
+				d3.select(this)
+					.style("stroke", "none"); 
+			});
 	}
 
 	//Update FCS graph (line)
@@ -267,8 +277,8 @@ function updateGraphs(){
 				.style("stroke", "orange"); 
 		})
 		.on("mouseout",  function(d) { 
-		    updatePopup("FCS",0)
-		    d3.select(this)
+			updatePopup("FCS",0)
+			d3.select(this)
 				.style("fill", "blue")
 				.style("stroke", "blue"); 
 		});
@@ -345,13 +355,25 @@ function updateGraphs(){
 
 function updatePopup(name,d){
 	// Updates the popup with data for the hovered / selected item
+	console.log(name)
+
+	if(name.indexOf("FCG") > -1){
+		selName = "FCG"
+		yScale.domain([0,1])
+	} else {
+		selName = name
+		maxDom = Math.max.apply(null, APIts.map(function(e){return e[name]}))
+		minDom = Math.min.apply(null, APIts.map(function(e){return e[name]}))
+		yScale.domain([(0.9 * minDom), (maxDom * 1.1)])
+	}
+
 	if(d == 0){
 		// Clear the popup
-		d3.select("#popupText-" + name)
+		d3.select("#popupText-" + selName)
 			.text("")
-		d3.select("#popupTitle-" + name)
+		d3.select("#popupTitle-" + selName)
 			.text("")
-		d3.select("#popupRect-" + name)
+		d3.select("#popupRect-" + selName)
 			.attr("width", 0)
 			.attr("height", 0)
 
@@ -360,10 +382,6 @@ function updatePopup(name,d){
 		val = d[name]
 		valText = name + ": " + d[name]
 		ts = d.ts
-		
-		maxDom = Math.max.apply(null, APIts.map(function(e){return e[name]}))
-		minDom = Math.min.apply(null, APIts.map(function(e){return e[name]}))
-		yScale.domain([(0.9 * minDom), (maxDom * 1.1)])
 
 		pointX = xScale(ts.toDate())
 		pointY = yScale(val)
@@ -386,17 +404,17 @@ function updatePopup(name,d){
 			pY = pointY - (popHeight + popGap)
 		}		
 
-		d3.select("#popupTitle-" + name)
+		d3.select("#popupTitle-" + selName)
 			.text(ts.format("YYYY-MM"))
 			.attr("x", (pX + popTextSize))
 			.attr("y", (pY + popTextSize))
 
-		d3.select("#popupText-" + name)
+		d3.select("#popupText-" + selName)
 			.text(valText)
 			.attr("x", (pX + popTextSize))
 			.attr("y", (pY + (2 * popTextSize)))
 
-		d3.select("#popupRect-" + name)
+		d3.select("#popupRect-" + selName)
 			.attr("x",pX)
 			.attr("y",pY)
 			.attr("width", popWidth)
