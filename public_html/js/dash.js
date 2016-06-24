@@ -278,7 +278,8 @@ function updateGraphs(){
 		.data([cfData])
 		
 	l.enter().append("path")
-		.style("stroke", "none")
+		
+	l.style("stroke", "none")
 		.style("fill", "lightblue")
 		.attr("class", "cfLinePath")
 		.attr("d", function(d) { return cfLine(d) + "Z"; })
@@ -294,14 +295,15 @@ function updateGraphs(){
 		.data([APIts])
 		
 	l.enter().append("path")
-		.style("stroke", "blue")
+	
+	l.style("stroke", "blue")
 		.style("fill", "none")
 		.attr("class", "linePath")
 		.attr("d", line)
 
 	// Draw the circles
 	var c = svg.select("#dataGroup-FCS")
-		.selectAll("cicle")
+		.selectAll("circle")
 		.data(APIts)
 		
     c.enter().append("circle")
@@ -378,7 +380,8 @@ function updateGraphs(){
 		.data([cfData])
 		
 	l.enter().append("path")
-		.style("stroke", "none")
+		
+	l.style("stroke", "none")
 		.style("fill", "lightgreen")
 		.attr("class", "cfLinePath")
 		.attr("d", function(d) { return cfLine(d) + "Z"; })
@@ -393,7 +396,8 @@ function updateGraphs(){
 		.data([APIts])
 		
 	l.enter().append("path")
-		.style("stroke", "green")
+
+	l.style("stroke", "green")
 		.style("fill", "none")
 		.attr("class", "linePath")
 		.attr("d", line)
