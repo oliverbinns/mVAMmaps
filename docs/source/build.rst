@@ -11,7 +11,7 @@ Prerequisites
 2. Install bower and gulp globally onto the machine using npm::
 
 	npm install -g bower
-	npm install -g gulp
+	npm install -g gulp-cli
 
 3. For building the documentation, install `python from here`_ and the sphinx module::
 
