@@ -13,6 +13,7 @@ Contents:
    build
    files
    structure
+   API
    mapping
 
 

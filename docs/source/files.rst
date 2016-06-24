@@ -5,9 +5,9 @@ The project contains the following main directories:
 
 1. /docs/ - this contains all of the project documentation.  The documentation is written in restructured text and can be compiled using the Sphinx python library.  The directory contains a windows batch and unix makefile to automate the compilation the documentation to html, PDF and various other formats using sphinx. Source text and configuration files for the documentation can be found in the /docs/source/ directory, with built output being placed in /docs/build/?/ where '?' is the documentation format (html, pdf etc.)
 
-2. /public_html/ contains the html, css and javascript that is to be served to the user.  This folder is contained entirely of static content (i.e. no PHP, ASP etc.), so can be served by a simple HTTP web server.  For more details on the contents of the this directory, see the section below.
+2. /public_html/ contains the html, css and JavaScript that is to be served to the user.  This folder is contained entirely of static content (i.e. no PHP, ASP etc.), so can be served by a simple HTTP web server.  For more details on the contents of the this directory, see the section below.
 
-3. /source/ contains the npm, bower, and gulp configuration files necessary to download third party javascript files and compile the site code for use.
+3. /source/ contains the npm, bower, and gulp configuration files necessary to download third party JavaScript files and compile the site code for use.
 
 
 
@@ -24,15 +24,15 @@ The public_html directory contains the main content of the dashboard itself and 
 
 4. js/ - contains the main JavaScript files for the dashboard, which each contain a set of functions, which are outlined in the section below.  The main index.html file uses the single js/compiled/app.min.js file, which is a combined and minified version of the various javascript files in the folder.  The app.min.js file is created by the gulpfile found in the /source/ directory.
 
-5. js/vendor/ - contains the following third party JavaScript libraries
+5. js/vendor/ - contains the following third party JavaScript libraries, which are copied from bower using the gulpfile in the /source/ directory.
 	* jQuery
 	* d3 - a SVG drawing library used for the maps and charts
 	* topojson - a library for converting topographical JavaScript Object Notation files for use in map drawing
 	* colorbrewer - a library of colours selected for good visibility of data in cartographic applications.
 	* moment - a library for easier handling of date and timestamps (parsing, displaying and calculating)
-These third party files are copied from bower using the geulpfile in the /source/ directory.
 
-6. data/ - 
+
+6. data/ - contains data files that are loaded using AJAX routines in the js/io.js file.  offlineAPIdata.json contains an example data extraction from the WFP API and can be used in its place if developing offline (by making an appropriate change in the AJAX routine).  regionMeta.json contains region (country subdivision information), which us used to populate the selector drop-down boxes and join data with the regions displayed on the map. The baseMap/ directory contains pre-prepared topojson files, which contain the shape information required to draw the regions on the map.  These files can be made for other regions by following the instructions in the :doc:`mapping` section of this document.
 
 
 JavaScript files
