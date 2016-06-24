@@ -113,6 +113,8 @@ function updateGraphs(){
 	for(var i = 0; i<APIfilt.length; i++){
 		varName = APIfilt[i]["Variable"]
   		varValue = APIfilt[i]["Mean"]
+  		varConfHigh = APIfilt[i]["CnfIntvHi"]
+  		varConfLow = APIfilt[i]["CnfIntvLo"]
 
 		ix = APIts.map(function(x) {return x.tsString}).indexOf(APIfilt[i].ts.toISOString());
   		
@@ -121,14 +123,21 @@ function updateGraphs(){
   			objts = {}
   			objts["tsString"] = APIfilt[i].ts.toISOString()
   			objts["ts"] = APIfilt[i].ts
-  			objts[varName] = varValue
+  			objts[varName] = {}
+  			objts[varName]["mean"] = varValue
+  			objts[varName]["confHigh"] = varConfHigh
+  			objts[varName]["confLow"] = varConfLow
   			APIts.push(objts)	
   		} else {
   			//Append the value to the identified time period
-  			APIts[ix][varName] = varValue
+  			APIts[ix][varName] = {}
+  			APIts[ix][varName]["mean"] = varValue
+  			APIts[ix][varName]["confHigh"] = varConfHigh
+  			APIts[ix][varName]["confLow"] = varConfLow
   		}
 	}
 
+	// Sort the time series 
 	function tsSort(a,b){
 		if(a.ts < b.ts) { return -1 }
 		if(a.ts > b.ts) { return 1 }
@@ -136,8 +145,6 @@ function updateGraphs(){
 	}
 
 	APIts.sort(tsSort)
-
-	dateRange = maxDate.diff(minDate,"months") + 1
 
 	// Define d3 scales and axis objects
 	xScale = d3.time.scale()
@@ -179,6 +186,7 @@ function updateGraphs(){
 			.text("% population");
 
 	// Calcuate the width of the bars
+	dateRange = maxDate.diff(minDate,"months") + 1
 	barWidth = (width / (dateRange+2))
 	if(barWidth > 10){
 		// Add padding only if bars are wide enough
@@ -204,11 +212,11 @@ function updateGraphs(){
 			.attr("y", function(d) { 
 				y0 = 0
 				for(var j=rNo;j>0;j--){
-					y0 = y0 + d["FCG==" + j]
+					y0 = y0 + d["FCG==" + j].mean
 				}
 				return yScale(y0)
 			})
-			.attr("height", function(d) { return height - yScale(d["FCG==" + rNo]); })
+			.attr("height", function(d) { return height - yScale(d["FCG==" + rNo].mean); })
 			.on("mouseover", function(d) { 
 				updatePopup(d3.select(this).attr('class'),d)
 				d3.select(this)
@@ -222,8 +230,8 @@ function updateGraphs(){
 	}
 
 	//Update FCS graph (line)
-	maxFCS = Math.max.apply(null, APIts.map(function(d){return d.FCS}))
-	minFCS = Math.min.apply(null, APIts.map(function(d){return d.FCS}))
+	maxFCS = Math.max.apply(null, APIts.map(function(d){return d.FCS.confHigh}))
+	minFCS = Math.min.apply(null, APIts.map(function(d){return d.FCS.confLow}))
 
 	yScale.domain([(0.9 * minFCS), (maxFCS * 1.1)])
 	yAxis.ticks(10, "");
@@ -242,13 +250,47 @@ function updateGraphs(){
 			.style("text-anchor", "end")
 			.text("FCS");
 
+	// Add the confidence interval shape
+	var cfData = [],
+		cfHigh = [],
+		cfLow = [],
+		cfLength = APIts.length
+	for(var i = 0; i < cfLength; i++ ){
+		var h  = {}
+		h.val = APIts[i].FCS.confHigh
+		h.ts = APIts[i].ts
+
+		var l = {}
+		l.val = APIts[(cfLength-1) - i].FCS.confLow
+		l.ts = APIts[(cfLength-1) - i].ts
+
+		cfHigh.push(h)
+		cfLow.push(l)
+	}
+	cfData = cfHigh.concat(cfLow)
+
+	var cfLine = d3.svg.line()
+		.x(function(d) { return xScale(d.ts.toDate()) })
+		.y(function(d) { return yScale(d.val) })
+
+	var l = svg.select("#dataGroup-FCS")
+		.selectAll(".cfLinePath")
+		.data([cfData])
+		
+	l.enter().append("path")
+		.style("stroke", "none")
+		.style("fill", "lightblue")
+		.attr("class", "cfLinePath")
+		.attr("d", function(d) { return cfLine(d) + "Z"; })
+
+
 	// Add the line
 	var line = d3.svg.line()
 		.x(function(d) { return xScale(d.ts.toDate()) })
-		.y(function(d) { return yScale(d.FCS) })
+		.y(function(d) { return yScale(d.FCS.mean) })
 
 	var l = svg.select("#dataGroup-FCS")
-		.selectAll("path")
+		.selectAll(".linePath")
 		.data([APIts])
 		
 	l.enter().append("path")
@@ -268,7 +310,7 @@ function updateGraphs(){
 		.attr("class", "lineCircle")
 	
 	c.attr("cx", function(d){return xScale(d.ts.toDate())})
-		.attr("cy", function(d){return yScale(d.FCS)})
+		.attr("cy", function(d){return yScale(d.FCS.mean)})
 		.attr("r", "3")
 		.on("mouseover", function(d) { 
 			updatePopup("FCS",d)
@@ -288,8 +330,8 @@ function updateGraphs(){
 
 
 	//Update rCSI graph (line)
-	maxrCSS = Math.max.apply(null, APIts.map(function(d){return d.rCSI}))
-	minrCSI = Math.min.apply(null, APIts.map(function(d){return d.rCSI}))
+	maxrCSS = Math.max.apply(null, APIts.map(function(d){return d.rCSI.confHigh}))
+	minrCSI = Math.min.apply(null, APIts.map(function(d){return d.rCSI.confLow}))
 
 	yScale.domain([(0.9 * minrCSI), (maxrCSS * 1.1)])
 	yAxis.ticks(10, "");
@@ -308,13 +350,46 @@ function updateGraphs(){
 			.style("text-anchor", "end")
 			.text("rCSI");
 
+	// Add the confidence interval shape
+	var cfData = [],
+		cfHigh = [],
+		cfLow = [],
+		cfLength = APIts.length
+	for(var i = 0; i < cfLength; i++ ){
+		var h  = {}
+		h.val = APIts[i].rCSI.confHigh
+		h.ts = APIts[i].ts
+
+		var l = {}
+		l.val = APIts[(cfLength-1) - i].rCSI.confLow
+		l.ts = APIts[(cfLength-1) - i].ts
+
+		cfHigh.push(h)
+		cfLow.push(l)
+	}
+	cfData = cfHigh.concat(cfLow)
+
+	var cfLine = d3.svg.line()
+		.x(function(d) { return xScale(d.ts.toDate()) })
+		.y(function(d) { return yScale(d.val) })
+
+	var l = svg.select("#dataGroup-rCSI")
+		.selectAll(".cfLinePath")
+		.data([cfData])
+		
+	l.enter().append("path")
+		.style("stroke", "none")
+		.style("fill", "lightgreen")
+		.attr("class", "cfLinePath")
+		.attr("d", function(d) { return cfLine(d) + "Z"; })
+
 	// Add the line
 	var line = d3.svg.line()
 		.x(function(d) { return xScale(d.ts.toDate()) })
-		.y(function(d) { return yScale(d.rCSI) })
+		.y(function(d) { return yScale(d.rCSI.mean) })
 
 	var l = svg.select("#dataGroup-rCSI")
-		.selectAll("path")
+		.selectAll(".linePath")
 		.data([APIts])
 		
 	l.enter().append("path")
@@ -334,7 +409,7 @@ function updateGraphs(){
 		.attr("class", "lineCircle")
 	
 	c.attr("cx", function(d){return xScale(d.ts.toDate())})
-		.attr("cy", function(d){return yScale(d.rCSI)})
+		.attr("cy", function(d){return yScale(d.rCSI.mean)})
 		.attr("r", "3")
 		.on("mouseover", function(d) { 
 			updatePopup("rCSI",d)
@@ -355,15 +430,13 @@ function updateGraphs(){
 
 function updatePopup(name,d){
 	// Updates the popup with data for the hovered / selected item
-	console.log(name)
-
 	if(name.indexOf("FCG") > -1){
 		selName = "FCG"
 		yScale.domain([0,1])
 	} else {
 		selName = name
-		maxDom = Math.max.apply(null, APIts.map(function(e){return e[name]}))
-		minDom = Math.min.apply(null, APIts.map(function(e){return e[name]}))
+		maxDom = Math.max.apply(null, APIts.map(function(e){return e[name].mean}))
+		minDom = Math.min.apply(null, APIts.map(function(e){return e[name].mean}))
 		yScale.domain([(0.9 * minDom), (maxDom * 1.1)])
 	}
 
@@ -379,8 +452,8 @@ function updatePopup(name,d){
 
 	} else {
 		// Update the popup data
-		val = d[name]
-		valText = name + ": " + d[name]
+		val = d[name].mean
+		valText = name + ": " + d[name].mean
 		ts = d.ts
 
 		pointX = xScale(ts.toDate())
