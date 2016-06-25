@@ -28,15 +28,15 @@ popTextSize = 10
 
 // Map data files
 mapData = [
-	{"id":0, "file":"/data/baseMap/admin0_topo.json","tName":"admin0"},
-	{"id":1, "file":"/data/baseMap/admin1_topo_SLE.json","tName":"admin1_SLE"},
-	{"id":2, "file":"/data/baseMap/admin1_topo_YEM.json","tName":"admin1_YEM"},
-	{"id":3, "file":"/data/baseMap/admin1_topo.json","tName":"admin1"},
-	{"id":4, "file":"/data/baseMap/admin2_topo_YEM.json","tName":"admin2_YEM"},
-	{"id":5, "file":"/data/baseMap/admin2_topo_SLE.json","tName":"admin2_SLE"},
-	{"id":6, "file":"/data/baseMap/admin3_topo_SLE.json","tName":"admin3_SLE"},
-	{"id":7, "file":"/data/baseMap/roads_topo_SLE.json","tName":"sle_trs_roads_wfp_osm"},
-	{"id":8, "file":"/data/baseMap/roads_topo_YEM.json","tName":"yem_trs_roads_wfp_1"}
+	{"id":0, "file":"data/baseMap/admin0_topo.json","tName":"admin0"},
+	{"id":1, "file":"data/baseMap/admin1_topo_SLE.json","tName":"admin1_SLE"},
+	{"id":2, "file":"data/baseMap/admin1_topo_YEM.json","tName":"admin1_YEM"},
+	{"id":3, "file":"data/baseMap/admin1_topo.json","tName":"admin1"},
+	{"id":4, "file":"data/baseMap/admin2_topo_YEM.json","tName":"admin2_YEM"},
+	{"id":5, "file":"data/baseMap/admin2_topo_SLE.json","tName":"admin2_SLE"},
+	{"id":6, "file":"data/baseMap/admin3_topo_SLE.json","tName":"admin3_SLE"},
+	{"id":7, "file":"data/baseMap/roads_topo_SLE.json","tName":"sle_trs_roads_wfp_osm"},
+	{"id":8, "file":"data/baseMap/roads_topo_YEM.json","tName":"yem_trs_roads_wfp_1"}
 ]
 
 // Initial run script (document load)

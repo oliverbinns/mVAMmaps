@@ -2,7 +2,7 @@
 	"adm0":[
 		{
 			"name" : "Yemen",
-			"mapFile" : "/data/baseMap/admin1_topo_YEM.json",
+			"mapFile" : "data/baseMap/admin1_topo_YEM.json",
 			"topologyName":"admin1_YEM",
 			"adm1":[
 				"Entire country",
