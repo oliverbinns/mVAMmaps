@@ -6,13 +6,14 @@ function getRegionNames(){
 	for (var i = 0; i < x.length; i++) {
 		f = false
 		for (var j = 0; j < u.length; j++) {
-			if(x[i].className.baseVal == u[j]){
+			if(x[i].className.baseVal.split(" ")[1] == u[j]){
 				f = true
 			}
 		}
 		if(f==false){
-			u.push(x[i].className.baseVal)
-			console.log($('#op').text + "," + u)
+			u.push(x[i].className.baseVal.split(" ")[1])
+			//console.log($('#op').text + "," + u)
+			console.log(x[i].className.baseVal.split(" ")[1])
 		}
 	}
 
