@@ -33,3 +33,22 @@ function randCol(){
 	cols = colorbrewer.RdBu['10']
 	return cols[Math.floor(Math.random() * (10 - 0 + 1)) + 0]
 }
+
+function getData(){
+	var request = $.ajax({
+		type: "GET",
+		url: "/data/testFile.json",
+		data: {}
+	});
+	
+	//Success - callback to runArticle() to load content into div
+	request.done(function(msg) {
+		console.log("Data returned:")
+		console.log(msg)
+	});
+	
+	//Fail - callback to errorArticle() to load error message on screen
+	request.fail(function(){
+		console.warn("Error getting data")
+	});
+}
