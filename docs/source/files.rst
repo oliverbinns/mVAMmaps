@@ -35,8 +35,8 @@ The public_html directory contains the main content of the dashboard itself and 
 6. data/ - contains data files that are loaded using AJAX routines in the js/io.js file.  offlineAPIdata.json contains an example data extraction from the WFP API and can be used in its place if developing offline (by making an appropriate change in the AJAX routine).  regionMeta.json contains region (country subdivision information), which us used to populate the selector drop-down boxes and join data with the regions displayed on the map. The baseMap/ directory contains pre-prepared topojson files, which contain the shape information required to draw the regions on the map.  These files can be made for other regions by following the instructions in the :doc:`mapping` section of this document.
 
 
-JavaScript files
-----------------
+JavaScript files overview
+-------------------------
 
 The following JavaScript files are used:
 
