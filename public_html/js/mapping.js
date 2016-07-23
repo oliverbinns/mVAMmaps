@@ -41,7 +41,6 @@ function drawMap(m){
 			})
 			.attr("d", path)
 			.on("mouseover", function(d){
-				console.log("over!")
 				d3.select(this)
 					.attr("class", function(d){
 						var regName = getSelectedRegion()
@@ -79,10 +78,8 @@ function colourMap(){
 	gCountries.attr("class", function(d) { 
 			nm = d.properties.name.replace(/ /g, '_')
 			if(nm == regName){
-				console.info("*** regionSel " + nm )
 				return "region regionSel " + nm; 
 			} else {
-				console.info("region " + nm )
 				return "region " + nm; 
 			}
 		})
