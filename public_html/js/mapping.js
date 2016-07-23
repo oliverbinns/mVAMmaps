@@ -34,7 +34,9 @@ function drawMap(m){
     	.data(regions.features)
 		.enter().append("path")
 			.attr("class", function(d) { 
-				nm = d.properties.name.replace('\'', '').replace(' ', '').toLowerCase()
+				//nm = d.properties.name 
+				//nm = d.properties.name.replace('\'', '').replace(' ', '').toLowerCase()
+				nm = d.properties.name.replace(/ /g, '_')
 				return "region " + nm; 
 			})
 			.attr("d", path);
