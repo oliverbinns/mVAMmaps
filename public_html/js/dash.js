@@ -25,8 +25,19 @@ function loadDashboard() {
 		APIresponse = []
 		APIpage = 0
 		APIpull(opt)		
-	}
+	} else {
+		//Pull entire country data
+		opt = {}
+		opt["adm0"] = regioMeta.adm0[adm0ID].name
+		opt["adm1"] = "Entire country"
+		
+		APIresponse = []
+		APIpage = 0
+		APIpull(opt)
 
+		//Reset an prior map highlights
+		colourMap()
+	}
 }
 
 function initGraphs(){
@@ -431,6 +442,8 @@ function updateGraphs(){
 		});
 
 
+	console.log("Graphs updated")
+	$('#loadDiv').fadeOut()
 
 }
 
