@@ -198,12 +198,12 @@ function updateGraphs(){
 	// Redraw the stacked bars
 	for(var rNo=1;rNo<4;rNo++){
 		var r = svg.select("#dataGroup-FCG")
-			.selectAll(".rect" + rNo)
+			.selectAll(".FCG_" + rNo)
 			.data(APIts)
     		
 	    r.enter().append("rect")
-			.style("fill", function(){return barCols[rNo]})
-			.attr("class", "FCG==" + rNo)
+		r.style("fill", function(){return barCols[rNo]})
+			.attr("class", "FCG_" + rNo)
 		
 		r.attr("x", function(d) { 
 				return xScale(d.ts.toDate()) - (0.5 * barWidth); 
