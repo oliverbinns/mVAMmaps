@@ -201,6 +201,7 @@ function updateGraphs(){
 			.selectAll(".FCG_" + rNo)
 			.data(APIts)
     		
+    	r.exit().remove()
 	    r.enter().append("rect")
 		r.style("fill", function(){return barCols[rNo]})
 			.attr("class", "FCG_" + rNo)
@@ -305,7 +306,8 @@ function updateGraphs(){
 	var c = svg.select("#dataGroup-FCS")
 		.selectAll("circle")
 		.data(APIts)
-		
+
+	c.exit().remove()
     c.enter().append("circle")
 		.style("stroke", "blue")
 		.style("fill", "blue")
@@ -406,7 +408,8 @@ function updateGraphs(){
 	var c = svg.select("#dataGroup-rCSI")
 		.selectAll("circle")
 		.data(APIts)
-		
+	
+	c.exit().remove()
     c.enter().append("circle")
 		.style("stroke", "green")
 		.style("fill", "green")
@@ -434,6 +437,14 @@ function updateGraphs(){
 
 function updatePopup(name,d){
 	// Updates the popup with data for the hovered / selected item
+	if(name=="FCG_1"){
+		name = "FCG==1"
+	} else if(name=="FCG_2"){
+		name = "FCG==2"
+	} else if(name=="FCG_3"){
+		name = "FCG==3"
+	}
+
 	if(name.indexOf("FCG") > -1){
 		selName = "FCG"
 		yScale.domain([0,1])
