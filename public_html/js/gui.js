@@ -30,6 +30,7 @@ function selectAdmin0(){
 		}		
 
 		// Load any maps
+		$('#loadDiv').fadeIn()
 		loadDashboard()
 
 	} else {
@@ -41,6 +42,7 @@ function selectAdmin0(){
 function selectAdmin1(){
 	// Load the dashboard for the selection
 	if($('#ADM1select').val() != 'null'){
+		$('#loadDiv').fadeIn()
 		loadDashboard()
 
 		colourMap()
