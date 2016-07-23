@@ -8,6 +8,24 @@ html {
 	stroke-width: 0.5;
 }
 
+.regionHover {
+	fill: #aaaaaa;
+	stroke: #333333;
+	stroke-width: 0.5;
+}
+
+.regionSel {
+	fill: steelblue;
+	stroke: #333333;
+	stroke-width: 0.5;
+}
+
+.regionSelHover{
+	fill: darkblue;
+	stroke: #333333;
+	stroke-width: 0.5;
+}
+
 .axis {
   font: 10px sans-serif;
 }

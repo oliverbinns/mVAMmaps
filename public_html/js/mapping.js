@@ -39,5 +39,51 @@ function drawMap(m){
 				nm = d.properties.name.replace(/ /g, '_')
 				return "region " + nm; 
 			})
-			.attr("d", path);
+			.attr("d", path)
+			.on("mouseover", function(d){
+				console.log("over!")
+				d3.select(this)
+					.attr("class", function(d){
+						var regName = getSelectedRegion()
+						nm = d.properties.name.replace(/ /g, '_')
+						if(regName == nm){
+							return "region regionSelHover " + nm; 
+						} else {
+							return "region regionHover " + nm;
+						}
+					})
+			})
+			.on("mouseout", function(d){
+				d3.select(this)
+					.attr("class", function(d){
+						var regName = getSelectedRegion()
+						nm = d.properties.name.replace(/ /g, '_')
+						if(regName == nm){
+							return "region regionSel " + nm; 
+						} else {
+							return "region " + nm;
+						}
+					})
+			})
+			.on("click", function(d){
+				mapClick(d)
+			})
+}
+
+function colourMap(){
+	var regName = getSelectedRegion()
+
+	var gCountries = d3.select("#countries")
+		.selectAll(".region");
+		
+	gCountries.attr("class", function(d) { 
+			nm = d.properties.name.replace(/ /g, '_')
+			if(nm == regName){
+				console.info("*** regionSel " + nm )
+				return "region regionSel " + nm; 
+			} else {
+				console.info("region " + nm )
+				return "region " + nm; 
+			}
+		})
 }

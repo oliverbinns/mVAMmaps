@@ -42,11 +42,30 @@ function selectAdmin1(){
 	// Load the dashboard for the selection
 	if($('#ADM1select').val() != 'null'){
 		loadDashboard()
+
+		colourMap()
 	}
+}
+
+function getSelectedRegion(){
+		var c = $('#ADM0select').val()
+		var r = $('#ADM1select').val()
+		var regName = regioMeta.adm0[c].shapeFile_adm1[r]
+
+		return regName
 }
 
 function resetAdmin1(){
 	$('#ADM1select').empty()
 	$('#ADM1select').append('<option value="null"></option>')
 	$('#ADM1select').val("null")
+}
+
+function mapClick(d){
+	var c = $('#ADM0select').val()
+	var regName = d.properties.name.replace(/ /g, '_')
+	var r = regioMeta.adm0[c].shapeFile_adm1.indexOf(regName)
+	$('#ADM1select').val(r)
+
+	selectAdmin1()
 }
