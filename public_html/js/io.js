@@ -13,9 +13,13 @@ function APIpull(opt){
 	qs = "ADM0_NAME = '" + opt["adm0"] + "'"
 	if(typeof(opt["adm1"]) != "undefined" && opt["adm1"] != "Entire country"){
 		qs = qs + " AND AdminStrata = '" + opt["adm1"] + "'"
+		qs = qs + " AND IndpVars = 'AdminUnits'"
+
+	} else if(typeof(opt["adm1"]) != "undefined" && opt["adm1"] == "Entire country") {
+		qs = qs + " AND AdminStrata = '" + opt["adm0"] + "'"
+		qs = qs + " AND IndpVars = 'ADM0'"
 	}
 	//qs = qs + " AND IndpVars = \'AdminUnits,IDP_YN\'"
-    qs = qs + " AND IndpVars = 'AdminUnits'"
 	
 	console.log("Requesting data from API:")
 	console.log("    " + qs + " | page = " + APIpage)
@@ -28,7 +32,7 @@ function APIpull(opt){
 	}
 
 	// Offline use
-	APIurl = "data/offlineAPIdata.json"
+	//APIurl = "data/offlineAPIdata.json"
 
 	var request = $.ajax({
 		type: "POST",
