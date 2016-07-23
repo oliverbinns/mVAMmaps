@@ -45,6 +45,10 @@ function initGraphs(){
 			.attr("id", "svgContent" + name)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+		// Create a group to hold the bars / lines
+		var dataGrp = svg.append("g")
+			.attr("id", "dataGroup-" + name)
+
 		// Create axes
 		var axGrp = svg.append("g")
 			.attr("id", "axGroup-" + name)
@@ -57,11 +61,6 @@ function initGraphs(){
 		axGrp.append("g")
       		.attr("class", "y axis")
       		.attr("id", "yAxis-" + name)
-
-		// Create a group to hold the bars / lines
-		var dataGrp = svg.append("g")
-			.attr("id", "dataGroup-" + name)
-
 
 		// Create popup box
 		var popGrp = svg.append("g")
