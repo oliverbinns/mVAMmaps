@@ -2,6 +2,29 @@ html {
 
 }
 
+#loadDiv {
+	display: none;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	background-color: white;
+	z-index: 1000;
+	opacity: 0.8;
+}
+
+#loadText {
+	font-family: sans-serif;
+	margin-left: auto;
+	margin-right: auto;
+	width: 90%;
+	height: 90%;
+	text-align: center;
+	top: 40%;
+	position: absolute;
+}
+
 .region {
 	fill: #eeeeee;
 	stroke: #333333;
