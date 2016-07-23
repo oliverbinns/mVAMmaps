@@ -5,7 +5,6 @@
 			"mapFile" : "data/baseMap/admin1_topo_YEM.json",
 			"topologyName":"admin1_YEM",
 			"adm1":[
-				"Entire country",
 				"Abyan",
 				"Ad Dali",
 				"Aden",
@@ -29,7 +28,6 @@
 				"Taizz"
 			],
 			"shapeFile_adm1":[
-				0,
 				"Abyan",
 				"Al_Dhale'e",
 				"Aden",
