@@ -22,7 +22,7 @@ function loadDashboard() {
 		opt["adm0"] = regioMeta.adm0[adm0ID].name
 		opt["adm1"] = regioMeta.adm0[adm0ID].adm1[adm1ID]
 		
-		APIresponse = []
+		APIresponse.ADM1 = []
 		APIpage = 0
 		APIpull(opt)		
 	} else {
@@ -31,7 +31,8 @@ function loadDashboard() {
 		opt["adm0"] = regioMeta.adm0[adm0ID].name
 		opt["adm1"] = "Entire country"
 		
-		APIresponse = []
+		APIresponse.ADM0 = []
+		APIresponse.ADM1 = []
 		APIpage = 0
 		APIpull(opt)
 
@@ -106,45 +107,68 @@ function updateGraphs(){
 	// Update graph objects with new data
 	console.log("Updating graphs...")
 
+	// Get min/max dates
+	var APIdates = []
+	for(var a=0;a<=1;a++){
+		for (var i = 0; i < APIresponse["ADM"+a].length; i++) {
+			//Convert to a moment timestamp
+			APIresponse["ADM"+a][i].ts = moment.utc(APIresponse["ADM"+a][i].SvyDate)
+			APIdates.push(APIresponse["ADM"+a][i].ts)
+		}
+	}
+
+	minDate = moment.min(APIdates)
+	maxDate = moment.max(APIdates)
+
 	// Filter the API response as necessary
-	APIfilt = []
-	APIfilt = APIresponse.filter(function (d) {
-		return 	d.Variable == "FCG==1" ||
-				d.Variable == "FCG==2" ||
-				d.Variable == "FCG==3" ||
-				d.Variable == "rCSI" ||
-				d.Variable == "FCS";
-	})
+	APIfilt = {}
+	APIfilt.ADM0=[]
+	APIfilt.ADM1=[]
+	
+	for(var a=0;a<=1;a++){
+		APIfilt["ADM"+a] = APIresponse["ADM"+a].filter(function (d) {
+			return 	d.Variable == "FCG==1" ||
+					d.Variable == "FCG==2" ||
+					d.Variable == "FCG==3" ||
+					d.Variable == "rCSI" ||
+					d.Variable == "FCS";
+		})
+	}
 
 	// TO-DO date filtering based on user control
 
 	//Convert data to time series
-	APIts = []
-	for(var i = 0; i<APIfilt.length; i++){
-		varName = APIfilt[i]["Variable"]
-  		varValue = APIfilt[i]["Mean"]
-  		varConfHigh = APIfilt[i]["CnfIntvHi"]
-  		varConfLow = APIfilt[i]["CnfIntvLo"]
+	APIts = {}
+	APIts.ADM0=[]
+	APIts.ADM1=[]
 
-		ix = APIts.map(function(x) {return x.tsString}).indexOf(APIfilt[i].ts.toISOString());
-  		
-  		if(ix == -1){
-  			//Add the time period and the value associated with it
-  			objts = {}
-  			objts["tsString"] = APIfilt[i].ts.toISOString()
-  			objts["ts"] = APIfilt[i].ts
-  			objts[varName] = {}
-  			objts[varName]["mean"] = varValue
-  			objts[varName]["confHigh"] = varConfHigh
-  			objts[varName]["confLow"] = varConfLow
-  			APIts.push(objts)	
-  		} else {
-  			//Append the value to the identified time period
-  			APIts[ix][varName] = {}
-  			APIts[ix][varName]["mean"] = varValue
-  			APIts[ix][varName]["confHigh"] = varConfHigh
-  			APIts[ix][varName]["confLow"] = varConfLow
-  		}
+	for(var a=0;a<=1;a++){
+		for(var i = 0; i<APIfilt["ADM"+a].length; i++){
+			varName = APIfilt["ADM"+a][i]["Variable"]
+	  		varValue = APIfilt["ADM"+a][i]["Mean"]
+	  		varConfHigh = APIfilt["ADM"+a][i]["CnfIntvHi"]
+	  		varConfLow = APIfilt["ADM"+a][i]["CnfIntvLo"]
+
+			ix = APIts["ADM"+a].map(function(x) {return x.tsString}).indexOf(APIfilt["ADM"+a][i].ts.toISOString());
+	  		
+	  		if(ix == -1){
+	  			//Add the time period and the value associated with it
+	  			objts = {}
+	  			objts["tsString"] = APIfilt["ADM"+a][i].ts.toISOString()
+	  			objts["ts"] = APIfilt["ADM"+a][i].ts
+	  			objts[varName] = {}
+	  			objts[varName]["mean"] = varValue
+	  			objts[varName]["confHigh"] = varConfHigh
+	  			objts[varName]["confLow"] = varConfLow
+	  			APIts["ADM"+a].push(objts)	
+	  		} else {
+	  			//Append the value to the identified time period
+	  			APIts["ADM"+a][ix][varName] = {}
+	  			APIts["ADM"+a][ix][varName]["mean"] = varValue
+	  			APIts["ADM"+a][ix][varName]["confHigh"] = varConfHigh
+	  			APIts["ADM"+a][ix][varName]["confLow"] = varConfLow
+	  		}
+		}
 	}
 
 	// Sort the time series 
@@ -154,7 +178,8 @@ function updateGraphs(){
 		if(a.ts == b.ts) { return 0}
 	}
 
-	APIts.sort(tsSort)
+	APIts.ADM0.sort(tsSort)
+	APIts.ADM1.sort(tsSort)
 
 	// Define d3 scales and axis objects
 	xScale = d3.time.scale()
@@ -206,10 +231,16 @@ function updateGraphs(){
 	barCols = ["white","red","yellow","green"]
 
 	// Redraw the stacked bars
+	if(APIts.ADM1.length == 0){
+		FCGData = APIts.ADM0
+	} else {
+		FCGData = APIts.ADM1
+	}
+
 	for(var rNo=1;rNo<4;rNo++){
 		var r = svg.select("#dataGroup-FCG")
 			.selectAll(".FCG_" + rNo)
-			.data(APIts)
+			.data(FCGData)
     		
     	r.exit().remove()
 	    r.enter().append("rect")
@@ -241,8 +272,14 @@ function updateGraphs(){
 	}
 
 	//Update FCS graph (line)
-	maxFCS = Math.max.apply(null, APIts.map(function(d){return d.FCS.confHigh}))
-	minFCS = Math.min.apply(null, APIts.map(function(d){return d.FCS.confLow}))
+	maxFCSvals = []
+	minFCSvals = []
+	for(var a=0;a<=1;a++){
+		maxFCSvals[a] = Math.max.apply(null, APIts["ADM"+a].map(function(d){return d.FCS.confHigh}))
+		minFCSvals[a] = Math.min.apply(null, APIts["ADM"+a].map(function(d){return d.FCS.confLow}))
+	}
+	maxFCS = Math.max.apply(null, maxFCSvals)
+	minFCS = Math.min.apply(null, minFCSvals)
 
 	yScale.domain([(0.9 * minFCS), (maxFCS * 1.1)])
 	yAxis.ticks(10, "");
@@ -261,93 +298,119 @@ function updateGraphs(){
 			.style("text-anchor", "end")
 			.text("FCS");
 
-	// Add the confidence interval shape
-	var cfData = [],
-		cfHigh = [],
-		cfLow = [],
-		cfLength = APIts.length
-	for(var i = 0; i < cfLength; i++ ){
-		var h  = {}
-		h.val = APIts[i].FCS.confHigh
-		h.ts = APIts[i].ts
+	// Add the confidence interval shapes
+	var endPoint = 1
+	if(APIts.ADM1.length == 0){
+		endPoint = 0
+	} 
 
-		var l = {}
-		l.val = APIts[(cfLength-1) - i].FCS.confLow
-		l.ts = APIts[(cfLength-1) - i].ts
+	for(var a=0;a<=endPoint;a++){
+		var cfData = [],
+			cfHigh = [],
+			cfLow = [],
+			cfLength = APIts["ADM"+a].length
+		for(var i = 0; i < cfLength; i++ ){
+			var h  = {}
+			h.val = APIts["ADM"+a][i].FCS.confHigh
+			h.ts = APIts["ADM"+a][i].ts
 
-		cfHigh.push(h)
-		cfLow.push(l)
+			var l = {}
+			l.val = APIts["ADM"+a][(cfLength-1) - i].FCS.confLow
+			l.ts = APIts["ADM"+a][(cfLength-1) - i].ts
+
+			cfHigh.push(h)
+			cfLow.push(l)
+		}
+		cfData = cfHigh.concat(cfLow)
+
+		var cfLine = d3.svg.line()
+			.x(function(d) { return xScale(d.ts.toDate()) })
+			.y(function(d) { return yScale(d.val) })
+
+		var l = svg.select("#dataGroup-FCS")
+			.selectAll(".cfLinePath-FCS-" + a)
+			.data([cfData])
+		
+		l.exit().remove()
+		l.enter().append("path")
+			
+		l.style("stroke", "none")
+			.attr("class", "cfLinePath-FCS-" + a)
+			.attr("d", function(d) { return cfLine(d) + "Z"; })
+
+		// Add the line
+		var line = d3.svg.line()
+			.x(function(d) { return xScale(d.ts.toDate()) })
+			.y(function(d) { return yScale(d.FCS.mean) })
+
+		var l = svg.select("#dataGroup-FCS")
+			.selectAll(".linePath-FCS-" + a)
+			.data([APIts["ADM"+a]])
+			
+		l.exit().remove()
+		l.enter().append("path")
+		
+		l.attr("class", "linePath-FCS-" + a)
+			.attr("d", line)
+
+
+		// Draw the circles
+		var c = svg.select("#dataGroup-FCS")
+			.selectAll(".lineCircle-FCS-" + a)
+			.data(APIts["ADM"+a])
+
+		c.exit().remove()
+	    c.enter().append("circle")
+			.attr("class", "lineCircle-FCS-" + a)
+		
+		c.attr("cx", function(d){return xScale(d.ts.toDate())})
+			.attr("cy", function(d){return yScale(d.FCS.mean)})
+			.attr("r", "3")
+
+		if(a==0){
+			c.on("mouseover", function(d) { 
+				updatePopupADM0("FCS",d)
+				d3.select(this)
+					.style("fill", "orange")
+					.style("stroke", "orange"); 
+			})
+			.on("mouseout",  function(d) { 
+				updatePopupADM1("FCS",0)
+				d3.select(this)
+					.style("fill", "darkgrey")
+					.style("stroke", "darkgrey"); 
+			});
+		} else {
+			c.on("mouseover", function(d) { 
+				updatePopupADM0("FCS",d)
+				d3.select(this)
+					.style("fill", "orange")
+					.style("stroke", "orange"); 
+			})
+			.on("mouseout",  function(d) { 
+				updatePopupADM1("FCS",0)
+				d3.select(this)
+					.style("fill", "blue")
+					.style("stroke", "blue"); 
+			});
+		}
+
+	d3.select(".cfLinePath-FCS-" + a).moveToBack();
 	}
-	cfData = cfHigh.concat(cfLow)
-
-	var cfLine = d3.svg.line()
-		.x(function(d) { return xScale(d.ts.toDate()) })
-		.y(function(d) { return yScale(d.val) })
-
-	var l = svg.select("#dataGroup-FCS")
-		.selectAll(".cfLinePath")
-		.data([cfData])
-		
-	l.enter().append("path")
-		
-	l.style("stroke", "none")
-		.style("fill", "lightblue")
-		.attr("class", "cfLinePath")
-		.attr("d", function(d) { return cfLine(d) + "Z"; })
-
-
-	// Add the line
-	var line = d3.svg.line()
-		.x(function(d) { return xScale(d.ts.toDate()) })
-		.y(function(d) { return yScale(d.FCS.mean) })
-
-	var l = svg.select("#dataGroup-FCS")
-		.selectAll(".linePath")
-		.data([APIts])
-		
-	l.enter().append("path")
-	
-	l.style("stroke", "blue")
-		.style("fill", "none")
-		.attr("class", "linePath")
-		.attr("d", line)
-
-	// Draw the circles
-	var c = svg.select("#dataGroup-FCS")
-		.selectAll("circle")
-		.data(APIts)
-
-	c.exit().remove()
-    c.enter().append("circle")
-		.style("stroke", "blue")
-		.style("fill", "blue")
-		.attr("class", "lineCircle")
-	
-	c.attr("cx", function(d){return xScale(d.ts.toDate())})
-		.attr("cy", function(d){return yScale(d.FCS.mean)})
-		.attr("r", "3")
-		.on("mouseover", function(d) { 
-			updatePopup("FCS",d)
-			d3.select(this)
-				.style("fill", "orange")
-				.style("stroke", "orange"); 
-		})
-		.on("mouseout",  function(d) { 
-			updatePopup("FCS",0)
-			d3.select(this)
-				.style("fill", "blue")
-				.style("stroke", "blue"); 
-		});
-
-
 
 
 
 	//Update rCSI graph (line)
-	maxrCSS = Math.max.apply(null, APIts.map(function(d){return d.rCSI.confHigh}))
-	minrCSI = Math.min.apply(null, APIts.map(function(d){return d.rCSI.confLow}))
+	maxrCSIvals = []
+	minrCSIvals = []
+	for(var a=0;a<=1;a++){
+		maxrCSIvals[a] = Math.max.apply(null, APIts["ADM"+a].map(function(d){return d.rCSI.confHigh}))
+		minrCSIvals[a] = Math.min.apply(null, APIts["ADM"+a].map(function(d){return d.rCSI.confLow}))
+	}
+	maxrCSI = Math.max.apply(null, maxrCSIvals)
+	minrCSI = Math.min.apply(null, minrCSIvals)
 
-	yScale.domain([(0.9 * minrCSI), (maxrCSS * 1.1)])
+	yScale.domain([(0.9 * minrCSI), (maxrCSI * 1.1)])
 	yAxis.ticks(10, "");
 
 	svg = d3.select("#svgContentrCSI")
@@ -365,81 +428,99 @@ function updateGraphs(){
 			.text("rCSI");
 
 	// Add the confidence interval shape
-	var cfData = [],
-		cfHigh = [],
-		cfLow = [],
-		cfLength = APIts.length
-	for(var i = 0; i < cfLength; i++ ){
-		var h  = {}
-		h.val = APIts[i].rCSI.confHigh
-		h.ts = APIts[i].ts
+	for(var a=0;a<=endPoint;a++){
+		var cfData = [],
+			cfHigh = [],
+			cfLow = [],
+			cfLength = APIts["ADM"+a].length
+		for(var i = 0; i < cfLength; i++ ){
+			var h  = {}
+			h.val = APIts["ADM"+a][i].rCSI.confHigh
+			h.ts = APIts["ADM"+a][i].ts
 
-		var l = {}
-		l.val = APIts[(cfLength-1) - i].rCSI.confLow
-		l.ts = APIts[(cfLength-1) - i].ts
+			var l = {}
+			l.val = APIts["ADM"+a][(cfLength-1) - i].rCSI.confLow
+			l.ts = APIts["ADM"+a][(cfLength-1) - i].ts
 
-		cfHigh.push(h)
-		cfLow.push(l)
+			cfHigh.push(h)
+			cfLow.push(l)
+		}
+		cfData = cfHigh.concat(cfLow)
+
+		var cfLine = d3.svg.line()
+			.x(function(d) { return xScale(d.ts.toDate()) })
+			.y(function(d) { return yScale(d.val) })
+
+		var l = svg.select("#dataGroup-rCSI")
+			.selectAll(".cfLinePath-rCSI-" + a)
+			.data([cfData])
+		
+		l.exit().remove()
+		l.enter().append("path")
+			
+		l.style("stroke", "none")
+			.attr("class", "cfLinePath-rCSI-" + a)
+			.attr("d", function(d) { return cfLine(d) + "Z"; })
+
+		// Add the line
+		var line = d3.svg.line()
+			.x(function(d) { return xScale(d.ts.toDate()) })
+			.y(function(d) { return yScale(d.rCSI.mean) })
+
+		var l = svg.select("#dataGroup-rCSI")
+			.selectAll(".linePath-rCSI-" + a)
+			.data([APIts["ADM"+a]])
+			
+		l.exit().remove()
+		l.enter().append("path")
+		
+		l.attr("class", "linePath-rCSI-" + a)
+			.attr("d", line)
+
+
+		// Draw the circles
+		var c = svg.select("#dataGroup-rCSI")
+			.selectAll(".lineCircle-rCSI-" + a)
+			.data(APIts["ADM"+a])
+
+		c.exit().remove()
+	    c.enter().append("circle")
+			.attr("class", "lineCircle-rCSI-" + a)
+		
+		c.attr("cx", function(d){return xScale(d.ts.toDate())})
+			.attr("cy", function(d){return yScale(d.rCSI.mean)})
+			.attr("r", "3")
+
+		if(a==0){
+			c.on("mouseover", function(d) { 
+				updatePopupADM0("rCSI",d)
+				d3.select(this)
+					.style("fill", "orange")
+					.style("stroke", "orange"); 
+			})
+			.on("mouseout",  function(d) { 
+				updatePopupADM1("rCSI",0)
+				d3.select(this)
+					.style("fill", "darkgrey")
+					.style("stroke", "darkgrey"); 
+			});
+		} else {
+			c.on("mouseover", function(d) { 
+				updatePopupADM0("rCSI",d)
+				d3.select(this)
+					.style("fill", "orange")
+					.style("stroke", "orange"); 
+			})
+			.on("mouseout",  function(d) { 
+				updatePopupADM1("rCSI",0)
+				d3.select(this)
+					.style("fill", "green")
+					.style("stroke", "green"); 
+			});
+		}
+
+	d3.select(".cfLinePath-rCSI-" + a).moveToBack();
 	}
-	cfData = cfHigh.concat(cfLow)
-
-	var cfLine = d3.svg.line()
-		.x(function(d) { return xScale(d.ts.toDate()) })
-		.y(function(d) { return yScale(d.val) })
-
-	var l = svg.select("#dataGroup-rCSI")
-		.selectAll(".cfLinePath")
-		.data([cfData])
-		
-	l.enter().append("path")
-		
-	l.style("stroke", "none")
-		.style("fill", "lightgreen")
-		.attr("class", "cfLinePath")
-		.attr("d", function(d) { return cfLine(d) + "Z"; })
-
-	// Add the line
-	var line = d3.svg.line()
-		.x(function(d) { return xScale(d.ts.toDate()) })
-		.y(function(d) { return yScale(d.rCSI.mean) })
-
-	var l = svg.select("#dataGroup-rCSI")
-		.selectAll(".linePath")
-		.data([APIts])
-		
-	l.enter().append("path")
-
-	l.style("stroke", "green")
-		.style("fill", "none")
-		.attr("class", "linePath")
-		.attr("d", line)
-
-	// Draw the circles
-	var c = svg.select("#dataGroup-rCSI")
-		.selectAll("circle")
-		.data(APIts)
-	
-	c.exit().remove()
-    c.enter().append("circle")
-		.style("stroke", "green")
-		.style("fill", "green")
-		.attr("class", "lineCircle")
-	
-	c.attr("cx", function(d){return xScale(d.ts.toDate())})
-		.attr("cy", function(d){return yScale(d.rCSI.mean)})
-		.attr("r", "3")
-		.on("mouseover", function(d) { 
-			updatePopup("rCSI",d)
-			d3.select(this)
-				.style("fill", "orange")
-				.style("stroke", "orange"); 
-		})
-		.on("mouseout",  function(d) { 
-		    updatePopup("rCSI",0)
-		    d3.select(this)
-				.style("fill", "green")
-				.style("stroke", "green"); 
-		});
 
 
 	console.log("Graphs updated")
@@ -447,7 +528,14 @@ function updateGraphs(){
 
 }
 
-function updatePopup(name,d){
+function updatePopupADM0(name,d){
+	updatePopup(name,d,0)
+}
+function updatePopupADM1(name,d){
+	updatePopup(name,d,1)
+}
+
+function updatePopup(name,d,a){
 	// Updates the popup with data for the hovered / selected item
 	if(name=="FCG_1"){
 		name = "FCG==1"
@@ -462,8 +550,16 @@ function updatePopup(name,d){
 		yScale.domain([0,1])
 	} else {
 		selName = name
-		maxDom = Math.max.apply(null, APIts.map(function(e){return e[name].mean}))
-		minDom = Math.min.apply(null, APIts.map(function(e){return e[name].mean}))
+
+		maxDomVals = []
+		minDomVals = []
+		for(var a=0;a<=1;a++){
+			maxDomVals[a] = Math.max.apply(null, APIts["ADM"+a].map(function(e){return e[name].confHigh}))
+			minDomVals[a] = Math.min.apply(null, APIts["ADM"+a].map(function(e){return e[name].confLow}))
+		}
+		maxDom= Math.max.apply(null, maxDomVals)
+		minDom = Math.min.apply(null, minDomVals)
+
 		yScale.domain([(0.9 * minDom), (maxDom * 1.1)])
 	}
 

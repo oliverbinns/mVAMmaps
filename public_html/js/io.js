@@ -50,9 +50,9 @@ function APIpull(opt){
 		requestCountry.done(function(msg) {
 			//Parse result and concatenate onto the response
 			SVRresp = JSON.parse(msg)
-			APIresponse = APIresponse.concat(SVRresp)
+			APIresponse.ADM0 = APIresponse.ADM0.concat(SVRresp)
 			
-			console.log("API Data returned ok, " + SVRresp.length + " values, total " + APIresponse.length)
+			console.log("API Data returned ok, " + SVRresp.length + " values, total " + APIresponse.ADM0.length)
 			
 			// Check all data was returned in this page
 			if(SVRresp.length >= 999 ){
@@ -61,27 +61,17 @@ function APIpull(opt){
 				APIpull(opt)
 			} else {
 				console.log("All data collected, processing...")
-
-				// Get min/max dates
-				var APIdates = []
-				for (var i = 0; i < APIresponse.length; i++) {
-					//Convert to a moment timestamp
-					APIresponse[i].ts = moment.utc(APIresponse[i].SvyDate)
-					APIdates.push(APIresponse[i].ts)
-				}
-				minDate = moment.min(APIdates)
-				maxDate = moment.max(APIdates)
-
 				updateGraphs()
 			}
 		});
 		
-		//Fail - lof to onsole
+		//Fail - log to console
 		requestCountry.fail(function(){
 			console.warn("Error getting country-level API data")
 			alert("Error getting data from the mVAM API.  Cannot continue.")
 			$('#loadDiv').fadeOut()
 		});
+
 	} else {
 		var requestRegion = $.ajax(reqOptions);
 
@@ -89,9 +79,9 @@ function APIpull(opt){
 		requestRegion.done(function(msg) {
 			//Parse result and concatenate onto the response
 			SVRresp = JSON.parse(msg)
-			APIresponse = APIresponse.concat(SVRresp)
+			APIresponse.ADM1 = APIresponse.ADM1.concat(SVRresp)
 			
-			console.log("API Data returned ok, " + SVRresp.length + " values, total " + APIresponse.length)
+			console.log("API Data returned ok, " + SVRresp.length + " values, total " + APIresponse.ADM1.length)
 			
 			// Check all data was returned in this page
 			if(SVRresp.length >= 999 ){
@@ -100,22 +90,11 @@ function APIpull(opt){
 				APIpull(opt)
 			} else {
 				console.log("All data collected, processing...")
-
-				// Get min/max dates
-				var APIdates = []
-				for (var i = 0; i < APIresponse.length; i++) {
-					//Convert to a moment timestamp
-					APIresponse[i].ts = moment.utc(APIresponse[i].SvyDate)
-					APIdates.push(APIresponse[i].ts)
-				}
-				minDate = moment.min(APIdates)
-				maxDate = moment.max(APIdates)
-
 				updateGraphs()
 			}
 		});
 		
-		//Fail - lof to onsole
+		//Fail - log to console
 		requestRegion.fail(function(){
 			console.warn("Error getting region-level API data")
 			alert("Error getting data from the mVAM API.  Cannot continue.")
