@@ -9,4 +9,6 @@ For getting the regional values (example here Ad Dali in Yemen):
 
 For getting the whole country values (example here for Yemen)
 
-* ADM0_NAME = 'Yemen' AND AdminStrata = 'Ad Dali' AND IndpVars = 'Yemen' 
+* WHERE ADM0_NAME = 'Yemen' AND AdminStrata = 'Yemen' AND IndpVars = 'AMD0'
+
+The data that is returned from the API is put into the global variables APIresponse.ADM0 and APIresponse.ADM1 for country and regional level data respectively.
