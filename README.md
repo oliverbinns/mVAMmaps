@@ -4,4 +4,4 @@ This is a follow-up project to create a functional dashboard for the World Food 
 
 Documentation of the code is inline in the files and in the /docs/ folder (build with sphinx) for view online [here](http://mvammaps.readthedocs.io)
 
-An initial live demo version can be found [here](http://oliverbinns.com/mVAM/v1.1/)
+An initial live demo version can be found [here](http://oliverbinns.com/mVAM/v1.2/)
