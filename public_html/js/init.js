@@ -21,6 +21,11 @@ var APIstatus = {}
 		"page": 0,
 		"regName": null
 	}
+	APIstatus["general"] = {
+		"timeStart": "",
+		"timeEnd": "",
+		"IDP": False
+	}
 
 APIpage = 0
 regioMeta = {}
