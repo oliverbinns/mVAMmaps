@@ -1,29 +1,16 @@
 // Dashboard control functions
 
 function loadDashboard(adm0ID, adm1ID) {
+	//Call the API t pull the requried data 
+	//(will call updateGraphs() when done)
 
-	// If a region has been selected, run the API data pull
-	// NB: can also be 'Entire Country' on region selector
-	if(adm1ID != null){
-		console.log("not null")
-		opt = {}
-		opt["adm0"] = adm0ID
-		opt["adm1"] = adm1ID
-		
-		APIresponse.ADM1 = []
-		APIpage = 0
-		APIpull(opt)		
-	} else {
-		//Pull entire country data
-		opt = {}
-		opt["adm0"] = adm0ID
-		opt["adm1"] = "Entire country"
-		
-		APIresponse.ADM0 = []
-		APIresponse.ADM1 = []
-		APIpage = 0
-		APIpull(opt)
-	}
+	//Form options object
+	opt = {}
+	opt["adm0"] = adm0ID
+	opt["adm1"] = adm1ID
+	
+	//Call the API function (see io.js)
+	APIpull(opt)
 }
 
 function initGraphs(){
@@ -286,7 +273,7 @@ function updateGraphs(){
 	// Add the confidence interval shapes
 	var endPoint = 1
 	if(APIts.ADM1.length == 0){
-		endPoint = 0
+		//endPoint = 0
 	} 
 
 	for(var a=0;a<=endPoint;a++){
@@ -308,14 +295,20 @@ function updateGraphs(){
 		}
 		cfData = cfHigh.concat(cfLow)
 
+		if(cfData.length == 0)
+			shapeData = []
+		else{
+			shapeData = [cfData]
+		}
+
 		var cfLine = d3.svg.line()
 			.x(function(d) { return xScale(d.ts.toDate()) })
 			.y(function(d) { return yScale(d.val) })
 
 		var l = svg.select("#dataGroup-FCS")
 			.selectAll(".cfLinePath-FCS-" + a)
-			.data([cfData])
-		
+			.data(shapeData)
+
 		l.exit().remove()
 		l.enter().append("path")
 			
@@ -432,13 +425,19 @@ function updateGraphs(){
 		}
 		cfData = cfHigh.concat(cfLow)
 
+		if(cfData.length == 0)
+			shapeData = []
+		else{
+			shapeData = [cfData]
+		}
+
 		var cfLine = d3.svg.line()
 			.x(function(d) { return xScale(d.ts.toDate()) })
 			.y(function(d) { return yScale(d.val) })
 
 		var l = svg.select("#dataGroup-rCSI")
 			.selectAll(".cfLinePath-rCSI-" + a)
-			.data([cfData])
+			.data(shapeData)
 		
 		l.exit().remove()
 		l.enter().append("path")
