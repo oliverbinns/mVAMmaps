@@ -1,26 +1,14 @@
 // Dashboard control functions
 
-function loadDashboard() {
-	// Get the current selection
-	adm0ID = $('#ADM0select').val()
-	adm1ID = $('#ADM1select').val()
-
-	mapData = {}
-	mapData["file"] = regioMeta.adm0[adm0ID].mapFile
-	mapData["tName"] =regioMeta.adm0[adm0ID].topologyName
-	
-	// Check if country map is already loaded (i.e. only an admin1 change)
-	if($('#map-' + mapData["tName"]).length == 0){
-		$('#mapHolder').empty()
-		loadMap(mapData)
-	}
+function loadDashboard(adm0ID, adm1ID) {
 
 	// If a region has been selected, run the API data pull
 	// NB: can also be 'Entire Country' on region selector
-	if(adm1ID != "null"){
+	if(adm1ID != null){
+		console.log("not null")
 		opt = {}
-		opt["adm0"] = regioMeta.adm0[adm0ID].name
-		opt["adm1"] = regioMeta.adm0[adm0ID].adm1[adm1ID]
+		opt["adm0"] = adm0ID
+		opt["adm1"] = adm1ID
 		
 		APIresponse.ADM1 = []
 		APIpage = 0
@@ -28,16 +16,13 @@ function loadDashboard() {
 	} else {
 		//Pull entire country data
 		opt = {}
-		opt["adm0"] = regioMeta.adm0[adm0ID].name
+		opt["adm0"] = adm0ID
 		opt["adm1"] = "Entire country"
 		
 		APIresponse.ADM0 = []
 		APIresponse.ADM1 = []
 		APIpage = 0
 		APIpull(opt)
-
-		//Reset an prior map highlights
-		colourMap()
 	}
 }
 
