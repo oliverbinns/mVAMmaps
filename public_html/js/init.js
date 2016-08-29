@@ -5,9 +5,23 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
     height = 400 - margin.top - margin.bottom;
 
 // Globals for API data responses
-APIresponse = {}
-APIresponse.ADM0 = []
-APIresponse.ADM1 = []
+var APIresponse = {}
+	APIresponse["ADM0"] = []
+	APIresponse["ADM1"] = []
+
+
+var APIstatus = {}
+	APIstatus["ADM0"] = {
+		"status": 0,
+		"page": 0,
+		"regName": null
+	}
+	APIstatus["ADM1"] = {
+		"status": 0,
+		"page": 0,
+		"regName": null
+	}
+
 APIpage = 0
 regioMeta = {}
 minDate = 0
