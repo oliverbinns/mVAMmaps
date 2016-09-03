@@ -69,7 +69,8 @@ gulp.task('appScripts', function(){
 */
 	gulp.src('../public_html/js/*.js')
 		.pipe(filesize())
-	    .pipe(uglify('app.min.js',{outSourceMap: true}).on('error', gutil.log))
+	    .pipe(uglify('app.min.js',{outSourceMap: true, basePath:'../public_html/', sourceRoot:"/"})
+	    	.on('error', gutil.log))
 	    .pipe(filesize())
 	    .pipe(gulp.dest('../public_html/js/compiled/'))
 })
