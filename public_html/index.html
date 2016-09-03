@@ -6,23 +6,158 @@
 
         <!-- Load stylesheets -->
         <link rel="stylesheet" href="css/app.css">
-        
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/AdminLTE.min.css">
+        <link rel="stylesheet" href="css/font-awesome.min.css">
 	</head>
 	<body>
 <!-- 		<select id="ADM0select" onchange="selectAdmin0()"></select>
 		<select id="ADM1select" onchange="selectAdmin1()"></select> -->
 		
 		<div id="dashBoard">
-			<div id="FCGgraph" class="graphHolder"></div>
-			<div id="FCSgraph" class="graphHolder"></div>
-			<div id="rCSIgraph" class="graphHolder"></div>
-		</div>
 
-		<div id="loadDiv">
-			<div id="loadText">
-				<p>Loading data from mVAM API.  Please wait...</p>
-			</div>
-		</div>
+			<div class="row">
+
+				<section id="FCGchart" class="col-lg-6">
+				    <div class="box box-solid">
+				        <div class="box-header">
+				            <!-- tools box -->
+				            <div class="pull-right box-tools">
+
+				                <!-- the first span is for the bootstrap modal window used for chart info -->
+				                <span class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#FCGModal" title="View information about the chart"><i class="fa fa-info-circle"></i></span>
+				                <span id="btnSaveRfhPng" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Save as PNG"><i class="fa fa-file-photo-o"></i></span>
+				                <span id="btnDownloadRfhCsv" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Download CSV data"><i class="fa fa-download"></i></span>
+				            </div>
+				        	<!-- End of tools box -->
+
+				            <i class="fa fa-bar-chart"></i><!-- Small icon for the Chart -->
+				            <h3 class="box-title">Food Consumption Group (FCG)</h3><!-- Title of the Chart -->
+				        </div>
+				        <!-- End of box header -->
+				      
+				        <div class="box-body">
+				            <div id="FCGgraph" class="chart"></div> <!-- Placeholder for the Chart -->
+				        </div>
+				    </div>
+				</section>
+
+				<section id="FCSchart" class="col-lg-6">
+				    <div class="box box-solid">
+				        <div class="box-header">
+				            <!-- tools box -->
+				            <div class="pull-right box-tools">
+
+				                <!-- the first span is for the bootstrap modal window used for chart info -->
+				                <span class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#FCSModal" title="View information about the chart"><i class="fa fa-info-circle"></i></span>
+				                <span id="btnSaveRfhPng" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Save as PNG"><i class="fa fa-file-photo-o"></i></span>
+				                <span id="btnDownloadRfhCsv" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Download CSV data"><i class="fa fa-download"></i></span>
+				            </div>
+				        	<!-- End of tools box -->
+
+				            <i class="fa fa-bar-chart"></i><!-- Small icon for the Chart -->
+				            <h3 class="box-title">Food Consumption Score (FCS)</h3><!-- Title of the Chart -->
+				        </div>
+				        <!-- End of box header -->
+				      
+				        <div class="box-body">
+				            <div id="FCSgraph" class="chart"></div> <!-- Placeholder for the Chart -->
+				        </div>
+				    </div>
+				</section>
+			</div> <!-- Bootstrap row -->
+
+
+			<div class="row">
+				<section id="rCSIchart" class="col-lg-6">
+				    <div class="box box-solid">
+				        <div class="box-header">
+				            <!-- tools box -->
+				            <div class="pull-right box-tools">
+
+				                <!-- the first span is for the bootstrap modal window used for chart info -->
+				                <span class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#rCSIModal" title="View information about the chart"><i class="fa fa-info-circle"></i></span>
+				                <span id="btnSaveRfhPng" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Save as PNG"><i class="fa fa-file-photo-o"></i></span>
+				                <span id="btnDownloadRfhCsv" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Download CSV data"><i class="fa fa-download"></i></span>
+				            </div>
+				        	<!-- End of tools box -->
+
+				            <i class="fa fa-bar-chart"></i><!-- Small icon for the Chart -->
+				            <h3 class="box-title">Reduced Coping Strategy Index (rCSI)</h3><!-- Title of the Chart -->
+				        </div>
+				        <!-- End of box header -->
+				      
+				        <div class="box-body">
+				            <div id="rCSIgraph" class="chart"></div> <!-- Placeholder for the Chart -->
+				        </div>
+				    </div>
+				</section>
+			</div><!-- Bootstrap row -->
+
+
+		</div> <!-- Dashboard div -->
+
+		<div id="FCGModal" class="modal fade">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		        <h4 class="modal-title">Food Consumption Group (FCG)</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>For more details on the food group composition, weighted values and FCS thresholds, please see the <a href="http://documents.wfp.org/stellent/groups/public/documents/manual_guide_proced/wfp197216.pdf"> Food consumption Analysis Technical Guidance Sheet.</a></p>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+		<div id="FCSModal" class="modal fade">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		        <h4 class="modal-title">Food Consumption Score (FCS)</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>The food consumption score (FCS) is a proxy indicator for food security that measures the diversity of household diets, and how frequently food is consumed. The FCS is calculated using the frequency of consumption of eight food groups by a household during the 7 days before the survey using standardized weights for each of the food groups reflecting its respective nutrient density, and then classifies households as having 'poor', 'borderline' or 'acceptable' food consumption. For more details on the food group composition, weighted values and FCS thresholds, please see the <a href="http://documents.wfp.org/stellent/groups/public/documents/manual_guide_proced/wfp197216.pdf"> Food consumption Analysis Technical Guidance Sheet.</a></p>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+		<div id="rCSIModal" class="modal fade">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		        <h4 class="modal-title">Reduced Coping Strategy Index (rCSI)</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>The reduced Coping Strategies Index (rCSI) measures the frequency and severity of the behaviours households engage in when faced with shortages of food or financial resources to buy food. It assesses whether there has been a change in the consumption patterns of a given household. The rCSI is calculated using standard food consumption-based strategies and severity weighting. A higher score indicates that households are employing more frequent and/or extreme negative coping strategies. For the purpose of this bulletin, mVAM calculates the mean rCSI of households. For more details on the types of coping strategies considered and their respective severity weighting, please see the <a href="http://documents.wfp.org/stellent/groups/public/documents/manual_guide_proced/wfp211058.pdf">Coping Strategies Index Field Methods Manual.</a></p>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+
+
 	</body>
 
 	<!-- Load vendor scripts -->
@@ -31,8 +166,11 @@
 	<script src="js/vendor/topojson.min.js"></script>
 	<script src="js/vendor/colorbrewer.js"></script>
 	<script src="js/vendor/moment.min.js"></script>
-<!-- <script>document.createElement("picture");</script>
-	<script src="/js/vendor/picturefill.min.js"></script> -->
+	<script src="js/vendor/bootstrap.min.js"></script>
+	<script src="js/vendor/app.min.js"></script> <!-- AdminLTE -->
+	<script src="js/vendor/canvg.bundle.min.js"></script>
+	<script src="js/vendor/FileSaver.min.js"></script>
+
 
 	<!-- Load app script -->
 	<script src="js/compiled/app.min.js"></script>

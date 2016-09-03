@@ -2,6 +2,14 @@ html {
 
 }
 
+#dashBoard {
+
+    margin-left: 100px;
+    margin-right: 100px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
 #loadDiv {
 	display: none;
 	width: 100%;
@@ -142,5 +150,14 @@ html {
 .lineCircle-rCSI-1 {
 	fill: green;
 	stroke: green;
+}
+
+.box-tools .chart-button { 
+	margin-right: 5px; 
+}
+
+.btn-primary { 
+	background-color: #1F6EBC !important; 
+	border-color: #1F6EBC !important; 
 }
 
