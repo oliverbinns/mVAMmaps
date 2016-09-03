@@ -24,7 +24,7 @@ var APIstatus = {}
 	APIstatus["general"] = {
 		"timeStart": "",
 		"timeEnd": "",
-		"IDP": False
+		"IDP": false
 	}
 
 APIpage = 0

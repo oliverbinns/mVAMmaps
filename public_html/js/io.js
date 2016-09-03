@@ -41,8 +41,8 @@ function APIpull(opt){
 
 
 	//TODO - cehck if time range or IDP selector has changed
-	var newTime = False,
-		newIDP = False
+	var newTime = false,
+		newIDP = false
 
 	if (newTime){
 		APIstatus["ADM0"]["regName"] = ""
