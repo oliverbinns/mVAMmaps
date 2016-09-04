@@ -32,13 +32,12 @@ function initGraphs(){
 			.attr("id", "svgContent" + name)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-		// Create a group to hold the bars / lines
-		var dataGrp = svg.append("g")
-			.attr("id", "dataGroup-" + name)
-
 		// Create axes
 		var axGrp = svg.append("g")
 			.attr("id", "axGroup-" + name)
+
+      	axGrp.append("g")
+      		.attr("id", "hlGroup-" + name)
 
 		axGrp.append("g")
       		.attr("class", "x axis")
@@ -65,6 +64,9 @@ function initGraphs(){
       		.append("text")
       			.attr("class","titleLabelText")
 
+		// Create a group to hold the bars / lines
+		var dataGrp = svg.append("g")
+			.attr("id", "dataGroup-" + name)
 
 		// Create popup box
 		var popGrp = svg.append("g")
@@ -93,11 +95,39 @@ function initGraphs(){
 				.attr("y",0)
 	}
 
+	//Register a window resize  (with debounce)
+    $(window).on('resize', debounce(function(){
+	      var win = $(this);
+	      windowResizeDash()
+	    },100)
+    );
+
+}
+
+function windowResizeDash(){
+
+	//Update the graphs
+	updateGraphs()
 }
 
 function updateGraphs(){
 	// Update graph objects with new data
 	console.log("Updating graphs...")
+
+	//Find the width and height of the graphs
+    var svgHolder = d3.select("#FCSgraph");
+    width = svgHolder.node().getBoundingClientRect().width;
+        
+    var svgElem = d3.select("#svgFCS")
+        .attr("width", width)
+
+    var svgTop = svgElem.node().getBoundingClientRect().top
+    var holderBottom = svgHolder.node().getBoundingClientRect().bottom;
+   	height = holderBottom - svgTop;
+
+    width = width - margin.left - margin.right,
+    height = height - margin.top - margin.bottom;
+
 
 	//Set the graph titles
 	var graphTitle = ""
@@ -145,7 +175,7 @@ function updateGraphs(){
 	// TO-DO date filtering based on user control
 
 	//Convert data to time series
-	var APIts = {}
+	APIts = {}
 	APIts.ADM0=[]
 	APIts.ADM1=[]
 
@@ -221,6 +251,22 @@ function updateGraphs(){
 	svg.select("#yAxis-FCG")
 		.call(yAxis)
 
+	var hLine = svg.select("#axGroup-FCG").select("#hlGroup-FCG")
+		.selectAll("line.horizontalGrid")
+		.data(yScale.ticks(10))
+
+		hLine.enter().append("line")
+	        
+	    hLine.attr(
+	        {
+	            "class":"horizontalGrid",
+	            "x1" : 0,
+	            "x2" : width,
+	            "y1" : function(d){ return yScale(d);},
+	            "y2" : function(d){ return yScale(d);},
+	        });
+
+
 	// Calcuate the width of the bars
 	dateRange = maxDate.diff(minDate,"months") + 1
 	barWidth = (width / (dateRange+2))
@@ -269,6 +315,7 @@ function updateGraphs(){
 			});
 	}
 
+
 	//Update FCS graph (line)
 	maxFCSvals = []
 	minFCSvals = []
@@ -289,6 +336,20 @@ function updateGraphs(){
 
 	svg.select("#yAxis-FCS")
 		.call(yAxis)
+
+	svg.select("#axGroup-FCS").select("#hlGroup-FCS")
+		.selectAll("line.horizontalGrid")
+		.data(yScale.ticks(10)).enter()
+	    .append("line")
+	        .attr(
+	        {
+	            "class":"horizontalGrid",
+	            "x1" : 0,
+	            "x2" : width,
+	            "y1" : function(d){ return yScale(d);},
+	            "y2" : function(d){ return yScale(d);},
+	        });
+
 
 	// Add the confidence interval shapes
 	var endPoint = 1
@@ -416,6 +477,20 @@ function updateGraphs(){
 		.call(yAxis)
 		.append("text")
 
+	svg.select("#axGroup-rCSI").select("#hlGroup-rCSI")
+		.selectAll("line.horizontalGrid")
+		.data(yScale.ticks(10)).enter()
+	    .append("line")
+	        .attr(
+	        {
+	            "class":"horizontalGrid",
+	            "x1" : 0,
+	            "x2" : width,
+	            "y1" : function(d){ return yScale(d);},
+	            "y2" : function(d){ return yScale(d);},
+	        });
+
+
 	// Add the confidence interval shape
 	for(var a=0;a<=endPoint;a++){
 		var cfData = [],
@@ -527,6 +602,21 @@ function updatePopupADM1(name,d){
 }
 
 function updatePopup(name,d,a){
+	//Find the width and height of the graphs
+    var svgHolder = d3.select("#FCSgraph");
+    width = svgHolder.node().getBoundingClientRect().width;
+        
+    var svgElem = d3.select("#svgFCS")
+        .attr("width", width)
+
+    var svgTop = svgElem.node().getBoundingClientRect().top
+    var holderBottom = svgHolder.node().getBoundingClientRect().bottom;
+   	height = holderBottom - svgTop;
+
+    width = width - margin.left - margin.right,
+    height = height - margin.top - margin.bottom;
+
+
 	// Updates the popup with data for the hovered / selected item
 	if(name=="FCG_1"){
 		name = "FCG==1"
