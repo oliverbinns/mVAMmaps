@@ -21,10 +21,13 @@ function initGraphs(){
 
 	function makeGraph(name){
 		// Create an SVG element
+		var svgWidth =  width + margin.left + margin.right,
+			svgHeight = height + margin.top + margin.bottom
+
 		var svg = d3.select("#" + name + "graph").append("svg")
 			.attr("id", "svg" + name)
-			.attr("width", width + margin.left + margin.right)
-    		.attr("height", height + margin.top + margin.bottom)
+			.attr("width", svgWidth)
+    		.attr("height", svgHeight)
 		.append("g")
 			.attr("id", "svgContent" + name)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -45,6 +48,23 @@ function initGraphs(){
 		axGrp.append("g")
       		.attr("class", "y axis")
       		.attr("id", "yAxis-" + name)
+
+      	axGrp.append("g")
+      		.attr("class", "axisLabel")
+      		.attr("transform", "rotate(-90,10,70)")
+      		.append("text")
+      			.attr("id","axisLabelText")
+				.attr("y", 6)
+				.attr("dy", ".71em")
+				.style("text-anchor", "middle")
+				.text(name);
+
+      	axGrp.append("g")
+      		.attr("class", "titleLabel")
+      		.attr("transform", "translate(" + (svgWidth/3) + ",-20)")
+      		.append("text")
+      			.attr("class","titleLabelText")
+
 
 		// Create popup box
 		var popGrp = svg.append("g")
@@ -79,6 +99,21 @@ function updateGraphs(){
 	// Update graph objects with new data
 	console.log("Updating graphs...")
 
+	//Set the graph titles
+	var graphTitle = ""
+
+	if(APIresponse["ADM1"].length > 0 ){
+		graphTitle += APIresponse["ADM0"][0]["ADM0_NAME"]
+	} else {
+		graphTitle = "No country selected"
+	}
+	
+	if(APIresponse["ADM1"].length > 0 ){
+		graphTitle += " - " + APIresponse["ADM1"][0]["AdminStrata"]
+	}
+
+	$(".titleLabelText").text(graphTitle)
+
 	// Get min/max dates
 	var APIdates = []
 	for(var a=0;a<=1;a++){
@@ -93,7 +128,7 @@ function updateGraphs(){
 	maxDate = moment.max(APIdates)
 
 	// Filter the API response as necessary
-	APIfilt = {}
+	var APIfilt = {}
 	APIfilt.ADM0=[]
 	APIfilt.ADM1=[]
 	
@@ -110,7 +145,7 @@ function updateGraphs(){
 	// TO-DO date filtering based on user control
 
 	//Convert data to time series
-	APIts = {}
+	var APIts = {}
 	APIts.ADM0=[]
 	APIts.ADM1=[]
 
@@ -185,12 +220,6 @@ function updateGraphs(){
 
 	svg.select("#yAxis-FCG")
 		.call(yAxis)
-		.append("text")
-			.attr("transform", "rotate(-90)")
-			.attr("y", 6)
-			.attr("dy", ".71em")
-			.style("text-anchor", "end")
-			.text("% population");
 
 	// Calcuate the width of the bars
 	dateRange = maxDate.diff(minDate,"months") + 1
@@ -199,8 +228,6 @@ function updateGraphs(){
 		// Add padding only if bars are wide enough
 		barWidth = barWidth - (0.1 * barWidth)
 	} 
-	
-	barCols = ["white","red","yellow","green"]
 
 	// Redraw the stacked bars
 	if(APIts.ADM1.length == 0){
@@ -216,8 +243,7 @@ function updateGraphs(){
     		
     	r.exit().remove()
 	    r.enter().append("rect")
-		r.style("fill", function(){return barCols[rNo]})
-			.attr("class", "FCG_" + rNo)
+		r.attr("class", "FCG_" + rNo)
 		
 		r.attr("x", function(d) { 
 				return xScale(d.ts.toDate()) - (0.5 * barWidth); 
@@ -263,12 +289,6 @@ function updateGraphs(){
 
 	svg.select("#yAxis-FCS")
 		.call(yAxis)
-		.append("text")
-			.attr("transform", "rotate(-90)")
-			.attr("y", 6)
-			.attr("dy", ".71em")
-			.style("text-anchor", "end")
-			.text("FCS");
 
 	// Add the confidence interval shapes
 	var endPoint = 1
@@ -349,27 +369,23 @@ function updateGraphs(){
 			c.on("mouseover", function(d) { 
 				updatePopupADM0("FCS",d)
 				d3.select(this)
-					.style("fill", "orange")
-					.style("stroke", "orange"); 
+					.classed("circSelected", true); 
 			})
 			.on("mouseout",  function(d) { 
 				updatePopupADM1("FCS",0)
 				d3.select(this)
-					.style("fill", "darkgrey")
-					.style("stroke", "darkgrey"); 
+					.classed("circSelected", false); 
 			});
 		} else {
 			c.on("mouseover", function(d) { 
 				updatePopupADM0("FCS",d)
 				d3.select(this)
-					.style("fill", "orange")
-					.style("stroke", "orange"); 
+					.classed("circSelected", true); 
 			})
 			.on("mouseout",  function(d) { 
 				updatePopupADM1("FCS",0)
 				d3.select(this)
-					.style("fill", "blue")
-					.style("stroke", "blue"); 
+					.classed("circSelected", false); 
 			});
 		}
 
@@ -399,11 +415,6 @@ function updateGraphs(){
 	svg.select("#yAxis-rCSI")
 		.call(yAxis)
 		.append("text")
-			.attr("transform", "rotate(-90)")
-			.attr("y", 6)
-			.attr("dy", ".71em")
-			.style("text-anchor", "end")
-			.text("rCSI");
 
 	// Add the confidence interval shape
 	for(var a=0;a<=endPoint;a++){
@@ -479,27 +490,23 @@ function updateGraphs(){
 			c.on("mouseover", function(d) { 
 				updatePopupADM0("rCSI",d)
 				d3.select(this)
-					.style("fill", "orange")
-					.style("stroke", "orange"); 
+					.classed("circSelected", true); 
 			})
 			.on("mouseout",  function(d) { 
 				updatePopupADM1("rCSI",0)
 				d3.select(this)
-					.style("fill", "darkgrey")
-					.style("stroke", "darkgrey"); 
+					.classed("circSelected", false); 
 			});
 		} else {
 			c.on("mouseover", function(d) { 
 				updatePopupADM0("rCSI",d)
 				d3.select(this)
-					.style("fill", "orange")
-					.style("stroke", "orange"); 
+					.classed("circSelected", true); 
 			})
 			.on("mouseout",  function(d) { 
 				updatePopupADM1("rCSI",0)
 				d3.select(this)
-					.style("fill", "green")
-					.style("stroke", "green"); 
+					.classed("circSelected", false); 
 			});
 		}
 
@@ -560,7 +567,7 @@ function updatePopup(name,d,a){
 	} else {
 		// Update the popup data
 		val = d[name].mean
-		valText = name + ": " + d[name].mean
+		valText = name + ": " + (Math.round(val * 100)) / 100
 		ts = d.ts
 
 		pointX = xScale(ts.toDate())
