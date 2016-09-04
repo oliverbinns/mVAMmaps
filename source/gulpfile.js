@@ -56,6 +56,8 @@ gulp.task('CDNfallback', function(){
 			{src: sPath + "canvg/dist/canvg.bundle.min.js",
 			tgt:  tPath},
 			{src: sPath + "file-saver/FileSaver.min.js",
+			tgt:  tPath},
+			{src: sPath + "papaparse/papaparse.min.js",
 			tgt:  tPath}
 		];
 
