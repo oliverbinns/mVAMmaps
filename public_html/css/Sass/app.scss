@@ -2,6 +2,37 @@ html {
 
 }
 
+//WFP colours
+$WFPBlue: 		#2A93FC;
+$WFPBlueAccent: #2A93FC;
+
+$WFPBlue-1:		#DFEFFF;
+$WFPBlue-2:		#85C1FD;
+$WFPBlue-3:		#57AAFD;
+$WFPBlue-4:		#037CF5;
+
+$WFPgrey-1: 	#F3F3F3;
+$WFPgrey-2: 	#CCCCCC;
+$WFPgrey-3: 	#8C8C8C;
+$WFPgrey-4: 	#4D4D4D;
+$WFPgrey-5: 	#333333;
+
+$WFPred:		#FF5252;
+$WFPorange:		#FFC759;
+$WFPyellow:		#FCDC5D;
+$WFPgreen:		#B3DE62;
+
+$WFPtext: 		#404040;
+$WFPbackground: #FFFFFF;
+
+#dashBoard {
+
+    margin-left: 100px;
+    margin-right: 100px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
 #loadDiv {
 	display: none;
 	width: 100%;
@@ -25,34 +56,6 @@ html {
 	position: absolute;
 }
 
-.region {
-	fill: #eeeeee;
-	stroke: #333333;
-	stroke-width: 0.5;
-}
-
-.regionHover {
-	fill: #aaaaaa;
-	stroke: #333333;
-	stroke-width: 0.5;
-}
-
-.regionSel {
-	fill: steelblue;
-	stroke: #333333;
-	stroke-width: 0.5;
-}
-
-.regionSelHover{
-	fill: darkblue;
-	stroke: #333333;
-	stroke-width: 0.5;
-}
-
-.axis {
-  font: 10px sans-serif;
-}
-
 .popupText {
   font: 10px sans-serif;
 }
@@ -67,80 +70,17 @@ html {
 	stroke: orange;
 }
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+.circSelected {
+	fill: $WFPorange;
+	stroke: $WFPorange;
 }
 
-#mapHolder {
-	float: left;
+.box-tools .chart-button { 
+	margin-right: 5px; 
 }
 
-#FCSgraph {
-	float: left;
-}
-
-.cfLinePath-FCS-0 {
-	fill: lightgrey;
-	fill-opacity: 0.5;
-}
-
-.cfLinePath-FCS-1 {
-	fill: lightblue;
-	fill-opacity: 0.5;
-}
-
-.linePath-FCS-0{
-	fill: none;
-	stroke: darkgrey;
-}
-
-.linePath-FCS-1{
-	fill: none;
-	stroke: blue;
-}
-
-.lineCircle-FCS-0 {
-	fill: darkgrey;
-	stroke: darkgrey;
-}
-
-.lineCircle-FCS-1 {
-	fill: blue;
-	stroke: blue;
-}
-
-
-
-.cfLinePath-rCSI-0 {
-	fill: lightgrey;
-	fill-opacity: 0.5;
-}
-
-.cfLinePath-rCSI-1 {
-	fill: lightgreen;
-	fill-opacity: 0.5;
-}
-
-.linePath-rCSI-0{
-	fill: none;
-	stroke: darkgrey;
-}
-
-.linePath-rCSI-1{
-	fill: none;
-	stroke: green;
-}
-
-.lineCircle-rCSI-0 {
-	fill: darkgrey;
-	stroke: darkgrey;
-}
-
-.lineCircle-rCSI-1 {
-	fill: green;
-	stroke: green;
+.btn-primary { 
+	background-color: #1F6EBC !important; 
+	border-color: #1F6EBC !important; 
 }
 

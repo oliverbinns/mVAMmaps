@@ -10,7 +10,8 @@ var gulp = require('gulp'),
 var startupTasks = ['CDNfallback',
 					'appScripts', 
 					'build-css', 
-					'fontAwesome'
+					'fontAwesome',
+					'bootstrap'
 					]
 
 
@@ -51,6 +52,12 @@ gulp.task('CDNfallback', function(){
 			{src: sPath + "colorbrewer/colorbrewer.js",
 			tgt:  tPath},
 			{src: sPath + "moment/min/moment.min.js",
+			tgt:  tPath},
+			{src: sPath + "canvg/dist/canvg.bundle.min.js",
+			tgt:  tPath},
+			{src: sPath + "file-saver/FileSaver.min.js",
+			tgt:  tPath},
+			{src: sPath + "papaparse/papaparse.min.js",
 			tgt:  tPath}
 		];
 
@@ -69,7 +76,8 @@ gulp.task('appScripts', function(){
 */
 	gulp.src('../public_html/js/*.js')
 		.pipe(filesize())
-	    .pipe(uglify('app.min.js',{outSourceMap: true}).on('error', gutil.log))
+	    .pipe(uglify('app.min.js',{outSourceMap: true, basePath:'../public_html/', sourceRoot:"/"})
+	    	.on('error', gutil.log))
 	    .pipe(filesize())
 	    .pipe(gulp.dest('../public_html/js/compiled/'))
 })
@@ -98,4 +106,15 @@ gulp.task('fontAwesome', function(){
 	gulp.src('bower_components/font-awesome/css/font-awesome.min.css').pipe(gulp.dest('../public_html/css/'));
 	gulp.src('bower_components/font-awesome/css/font-awesome.css.map').pipe(gulp.dest('../public_html/css/'));
 	gulp.src('bower_components/font-awesome/fonts/*').pipe(gulp.dest('../public_html/fonts/'));
+})
+
+gulp.task('bootstrap', function(){
+/*	
+	Copy Bootstrap & Admin LTE CSS/JS (min + map)
+*/
+	gulp.src('bower_components/bootstrap/dist/css/bootstrap*.min.css*').pipe(gulp.dest('../public_html/css/'));
+	gulp.src('bower_components/bootstrap/dist/js/bootstrap.min.js').pipe(gulp.dest('../public_html/js/vendor/'));
+	gulp.src('bower_components/AdminLTE/dist/css/AdminLTE.min.css').pipe(gulp.dest('../public_html/css/'));
+	gulp.src('bower_components/AdminLTE/dist/js/app.min.js').pipe(gulp.dest('../public_html/js/vendor/'));
+
 })

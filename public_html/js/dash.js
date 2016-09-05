@@ -1,44 +1,51 @@
 // Dashboard control functions
 
-function loadDashboard() {
-	// Get the current selection
-	adm0ID = $('#ADM0select').val()
-	adm1ID = $('#ADM1select').val()
+function loadDashboard(adm0ID, adm1ID, IDP, yearStart, monthStart, yearEnd, monthEnd) {
+	//Call the API t pull the requried data 
+	//(will call updateGraphs() when done)
 
-	mapData = {}
-	mapData["file"] = regioMeta.adm0[adm0ID].mapFile
-	mapData["tName"] =regioMeta.adm0[adm0ID].topologyName
-	
-	// Check if country map is already loaded (i.e. only an admin1 change)
-	if($('#map-' + mapData["tName"]).length == 0){
-		$('#mapHolder').empty()
-		loadMap(mapData)
-	}
+	//Form options object
+	opt = {}
+	opt["adm0"] = adm0ID
+	opt["adm1"] = adm1ID
+	opt["IDP"] = IDP
 
-	// If a region has been selected, run the API data pull
-	// NB: can also be 'Entire Country' on region selector
-	if(adm1ID != "null"){
-		opt = {}
-		opt["adm0"] = regioMeta.adm0[adm0ID].name
-		opt["adm1"] = regioMeta.adm0[adm0ID].adm1[adm1ID]
-		
-		APIresponse.ADM1 = []
-		APIpage = 0
-		APIpull(opt)		
+	// Parse the dates
+	if(!yearStart | !monthStart | !yearEnd | !monthEnd){
+		//Incomplete dates
+		dateSelection["start"] = null
+		dateSelection["end"] = null
 	} else {
-		//Pull entire country data
-		opt = {}
-		opt["adm0"] = regioMeta.adm0[adm0ID].name
-		opt["adm1"] = "Entire country"
-		
-		APIresponse.ADM0 = []
-		APIresponse.ADM1 = []
-		APIpage = 0
-		APIpull(opt)
-
-		//Reset an prior map highlights
-		colourMap()
+		var s = yearStart + "-" + pad(monthStart,2,0) + "-01T00:00:00"
+		var e = yearEnd + "-" + pad(monthEnd,2,0) + "-01T00:00:00"
+		dateSelection["start"] = moment.utc(s)
+		dateSelection["end"] = moment.utc(e)
 	}
+
+	if(IDP==true){
+		opt["adm1"] = null
+	}
+
+	//Reset the API status (invalidate caches)
+	APIstatus["ADM0"]["status"] = 'in progress'
+	APIstatus["ADM1"]["status"] = 'in progress'
+	
+	APIresponse["ADM0"] = []
+	APIresponse["ADM1"] = []
+
+	APIstatus["ADM0"] = {
+		"status": 0,
+		"page": 0,
+		"regName": null
+	}
+	APIstatus["ADM1"] = {
+		"status": 0,
+		"page": 0,
+		"regName": null
+	}
+	
+	//Call the API function (see io.js)
+	APIpull(opt)
 }
 
 function initGraphs(){
@@ -49,30 +56,66 @@ function initGraphs(){
 
 	function makeGraph(name){
 		// Create an SVG element
+		var svgWidth =  width + margin.left + margin.right,
+			svgHeight = height + margin.top + margin.bottom
+
 		var svg = d3.select("#" + name + "graph").append("svg")
 			.attr("id", "svg" + name)
-			.attr("width", width + margin.left + margin.right)
-    		.attr("height", height + margin.top + margin.bottom)
+			.attr("width", svgWidth)
+    		.attr("height", svgHeight)
 		.append("g")
 			.attr("id", "svgContent" + name)
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-		// Create a group to hold the bars / lines
-		var dataGrp = svg.append("g")
-			.attr("id", "dataGroup-" + name)
 
 		// Create axes
 		var axGrp = svg.append("g")
 			.attr("id", "axGroup-" + name)
 
+      	axGrp.append("g")
+      		.attr("id", "hlGroup-" + name)
+
 		axGrp.append("g")
       		.attr("class", "x axis")
       		.attr("transform", "translate(0," + height + ")")
       		.attr("id", "xAxis-" + name)
+      		.style("font-size", "10px")
+      		.style("font-family", "Arial")
+      		.style("fill", WFPcolours["WFPtext"])
 
 		axGrp.append("g")
       		.attr("class", "y axis")
       		.attr("id", "yAxis-" + name)
+      		.style("font-size", "10px")
+      		.style("font-family", "Arial")
+      		.style("fill", WFPcolours["WFPtext"])
+
+      	axGrp.append("g")
+      		.attr("class", "axisLabel")
+      		.attr("transform", "rotate(-90,10,70)")
+      		.append("text")
+      			.attr("id","axisLabelText")
+				.attr("y", 6)
+				.attr("dy", ".71em")
+				.style("text-anchor", "middle")
+				.text(name)
+				.style("font-size", "10px")
+      			.style("font-family", "Arial")
+      			.style("fill", WFPcolours["WFPtext"])
+      			.style("stroke", "none")
+
+      	axGrp.append("g")
+      		.attr("class", "titleLabel")
+      		.attr("transform", "translate(" + (svgWidth/3) + ",-20)")
+      		.append("text")
+      			.attr("class","titleLabelText")
+				.style("font-size", "14px")
+      			.style("font-family", "Arial")
+      			.style("fill", WFPcolours["WFPgrey-2"])
+      			.style("stroke", "none")
+
+		// Create a group to hold the bars / lines
+		var dataGrp = svg.append("g")
+			.attr("id", "dataGroup-" + name)
 
 		// Create popup box
 		var popGrp = svg.append("g")
@@ -101,17 +144,59 @@ function initGraphs(){
 				.attr("y",0)
 	}
 
+	//Register a window resize  (with debounce)
+    $(window).on('resize', debounce(function(){
+	      var win = $(this);
+	      windowResizeDash()
+	    },100)
+    );
+
+}
+
+function windowResizeDash(){
+
+	//Update the graphs
+	updateGraphs()
 }
 
 function updateGraphs(){
 	// Update graph objects with new data
 	console.log("Updating graphs...")
 
+	//Find the width and height of the graphs
+    var svgHolder = d3.select("#FCSgraph");
+    width = svgHolder.node().getBoundingClientRect().width;
+        
+    var svgElem = d3.select("#svgFCS")
+        .attr("width", width)
+
+    var svgTop = svgElem.node().getBoundingClientRect().top
+    var holderBottom = svgHolder.node().getBoundingClientRect().bottom;
+   	height = holderBottom - svgTop;
+
+    width = width - margin.left - margin.right,
+    height = height - margin.top - margin.bottom;
+
+
+	//Set the graph titles
+	var graphTitle = ""
+
+	if(APIresponse["ADM1"].length > 0 ){
+		graphTitle += APIresponse["ADM0"][0]["ADM0_NAME"]
+	} else {
+		graphTitle = "No country selected"
+	}
+	
+	if(APIresponse["ADM1"].length > 0 ){
+		graphTitle += " - " + APIresponse["ADM1"][0]["AdminStrata"]
+	}
+
+	$(".titleLabelText").text(graphTitle)
+
 	// Get min/max dates
 	var APIdates = []
 	for(var a=0;a<=1;a++){
 		for (var i = 0; i < APIresponse["ADM"+a].length; i++) {
-			//Convert to a moment timestamp
 			APIresponse["ADM"+a][i].ts = moment.utc(APIresponse["ADM"+a][i].SvyDate)
 			APIdates.push(APIresponse["ADM"+a][i].ts)
 		}
@@ -133,6 +218,20 @@ function updateGraphs(){
 					d.Variable == "rCSI" ||
 					d.Variable == "FCS";
 		})
+
+		var s = dateSelection["start"]
+		var e = dateSelection["end"]
+
+		if(s != null && e != null){
+			APIfilt["ADM"+a] = APIfilt["ADM"+a].filter(function(d){
+				return d.ts >= dateSelection["start"] &&
+					d.ts <= dateSelection["end"]
+			})
+			
+			minDate = moment.max(s, minDate)
+			maxDate = moment.min(e, maxDate)
+		}
+
 	}
 
 	// TO-DO date filtering based on user control
@@ -196,7 +295,7 @@ function updateGraphs(){
 		.scale(xScale)
 		.orient("bottom")
 		.ticks(5)
-	.tickFormat(d3.time.format("%Y-%b"));
+		.tickFormat(d3.time.format("%Y-%b"));
 
 	var yAxis = d3.svg.axis()
 		.scale(yScale)
@@ -210,15 +309,40 @@ function updateGraphs(){
 
 	svg.select("#xAxis-FCG")
 		.call(xAxis)
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
 
 	svg.select("#yAxis-FCG")
 		.call(yAxis)
-		.append("text")
-			.attr("transform", "rotate(-90)")
-			.attr("y", 6)
-			.attr("dy", ".71em")
-			.style("text-anchor", "end")
-			.text("% population");
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
+
+	var hLine = svg.select("#axGroup-FCG").select("#hlGroup-FCG")
+		.selectAll("line.horizontalGrid")
+		.data(yScale.ticks(10))
+
+		hLine.exit().remove()
+		hLine.enter().append("line")
+	    hLine.attr(
+	        {
+	            "class":"horizontalGrid",
+	            "x1" : 0,
+	            "x2" : width,
+	            "y1" : function(d){ return yScale(d);},
+	            "y2" : function(d){ return yScale(d);},
+	        })
+	    hLine.style("fill", "none")
+	    	.style("stroke", WFPcolours["WFPgrey-2"])
+	    	.style("stroke-width", "1px")
+
 
 	// Calcuate the width of the bars
 	dateRange = maxDate.diff(minDate,"months") + 1
@@ -227,8 +351,6 @@ function updateGraphs(){
 		// Add padding only if bars are wide enough
 		barWidth = barWidth - (0.1 * barWidth)
 	} 
-	
-	barCols = ["white","red","yellow","green"]
 
 	// Redraw the stacked bars
 	if(APIts.ADM1.length == 0){
@@ -244,8 +366,14 @@ function updateGraphs(){
     		
     	r.exit().remove()
 	    r.enter().append("rect")
-		r.style("fill", function(){return barCols[rNo]})
-			.attr("class", "FCG_" + rNo)
+		r.attr("class", "FCG_" + rNo)
+			.style("fill", function(d){
+				if(rNo == 0){return WFPcolours["WFPbackground"]}
+				if(rNo == 1){return WFPcolours["WFPred"]}
+				if(rNo == 2){return WFPcolours["WFPyellow"]}
+				if(rNo == 3){return WFPcolours["WFPgreen"]}
+			})
+			.style("stroke", "none")
 		
 		r.attr("x", function(d) { 
 				return xScale(d.ts.toDate()) - (0.5 * barWidth); 
@@ -271,6 +399,7 @@ function updateGraphs(){
 			});
 	}
 
+
 	//Update FCS graph (line)
 	maxFCSvals = []
 	minFCSvals = []
@@ -288,20 +417,45 @@ function updateGraphs(){
 
 	svg.select("#xAxis-FCS")
 		.call(xAxis)
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
 
 	svg.select("#yAxis-FCS")
 		.call(yAxis)
-		.append("text")
-			.attr("transform", "rotate(-90)")
-			.attr("y", 6)
-			.attr("dy", ".71em")
-			.style("text-anchor", "end")
-			.text("FCS");
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
+
+	var hLine = svg.select("#axGroup-FCS").select("#hlGroup-FCS")
+		.selectAll("line.horizontalGrid")
+		.data(yScale.ticks(10))
+
+		hLine.exit().remove()
+		hLine.enter().append("line")
+	    hLine.attr(
+	        {
+	            "class":"horizontalGrid",
+	            "x1" : 0,
+	            "x2" : width,
+	            "y1" : function(d){ return yScale(d);},
+	            "y2" : function(d){ return yScale(d);},
+	        });
+	   	hLine.style("fill", "none")
+	    	.style("stroke", WFPcolours["WFPgrey-2"])
+	    	.style("stroke-width", "1px")
+
 
 	// Add the confidence interval shapes
 	var endPoint = 1
 	if(APIts.ADM1.length == 0){
-		endPoint = 0
+		//endPoint = 0
 	} 
 
 	for(var a=0;a<=endPoint;a++){
@@ -323,20 +477,32 @@ function updateGraphs(){
 		}
 		cfData = cfHigh.concat(cfLow)
 
+		if(cfData.length == 0)
+			shapeData = []
+		else{
+			shapeData = [cfData]
+		}
+
 		var cfLine = d3.svg.line()
 			.x(function(d) { return xScale(d.ts.toDate()) })
 			.y(function(d) { return yScale(d.val) })
 
 		var l = svg.select("#dataGroup-FCS")
 			.selectAll(".cfLinePath-FCS-" + a)
-			.data([cfData])
-		
+			.data(shapeData)
+
 		l.exit().remove()
 		l.enter().append("path")
 			
-		l.style("stroke", "none")
-			.attr("class", "cfLinePath-FCS-" + a)
+		l.attr("class", "cfLinePath-FCS-" + a)
 			.attr("d", function(d) { return cfLine(d) + "Z"; })
+
+		l.style("stroke", "none")
+		 .style("fill",function(){
+		 	if(a == 0){return WFPcolours["WFPgrey-2"]}
+		 	if(a == 1){return WFPcolours["WFPBlue-1"]}
+		 })		
+		 .style("fill-opacity", "0.5")	
 
 		// Add the line
 		var line = d3.svg.line()
@@ -353,6 +519,11 @@ function updateGraphs(){
 		l.attr("class", "linePath-FCS-" + a)
 			.attr("d", line)
 
+		l.style("stroke",function(){
+		 	if(a == 0){return WFPcolours["WFPgrey-4"]}
+		 	if(a == 1){return WFPcolours["WFPBlue"]}
+		 })
+		 .style("fill", "none")	
 
 		// Draw the circles
 		var c = svg.select("#dataGroup-FCS")
@@ -367,31 +538,37 @@ function updateGraphs(){
 			.attr("cy", function(d){return yScale(d.FCS.mean)})
 			.attr("r", "3")
 
+		c.style("fill", function(){
+			if(a == 0){return WFPcolours["WFPgrey-4"]}
+			if(a == 1){return WFPcolours["WFPBlue"]}
+		})
+		 .style("stroke", function(){
+			if(a == 0){return WFPcolours["WFPgrey-4"]}
+			if(a == 1){return WFPcolours["WFPBlue"]}
+		})
+
+
 		if(a==0){
 			c.on("mouseover", function(d) { 
 				updatePopupADM0("FCS",d)
 				d3.select(this)
-					.style("fill", "orange")
-					.style("stroke", "orange"); 
+					.classed("circSelected", true); 
 			})
 			.on("mouseout",  function(d) { 
 				updatePopupADM1("FCS",0)
 				d3.select(this)
-					.style("fill", "darkgrey")
-					.style("stroke", "darkgrey"); 
+					.classed("circSelected", false); 
 			});
 		} else {
 			c.on("mouseover", function(d) { 
 				updatePopupADM0("FCS",d)
 				d3.select(this)
-					.style("fill", "orange")
-					.style("stroke", "orange"); 
+					.classed("circSelected", true); 
 			})
 			.on("mouseout",  function(d) { 
 				updatePopupADM1("FCS",0)
 				d3.select(this)
-					.style("fill", "blue")
-					.style("stroke", "blue"); 
+					.classed("circSelected", false); 
 			});
 		}
 
@@ -417,15 +594,40 @@ function updateGraphs(){
 
 	svg.select("#xAxis-rCSI")
 		.call(xAxis)
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
 
 	svg.select("#yAxis-rCSI")
 		.call(yAxis)
-		.append("text")
-			.attr("transform", "rotate(-90)")
-			.attr("y", 6)
-			.attr("dy", ".71em")
-			.style("text-anchor", "end")
-			.text("rCSI");
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
+
+	var hLine = svg.select("#axGroup-rCSI").select("#hlGroup-rCSI")
+		.selectAll("line.horizontalGrid")
+		.data(yScale.ticks(10))
+
+		hLine.exit().remove()
+		hLine.enter().append("line")
+	    hLine.attr(
+	        {
+	            "class":"horizontalGrid",
+	            "x1" : 0,
+	            "x2" : width,
+	            "y1" : function(d){ return yScale(d);},
+	            "y2" : function(d){ return yScale(d);},
+	        })
+	   	hLine.style("fill", "none")
+	    	.style("stroke", WFPcolours["WFPgrey-2"])
+	    	.style("stroke-width", "1px")
+
 
 	// Add the confidence interval shape
 	for(var a=0;a<=endPoint;a++){
@@ -447,20 +649,32 @@ function updateGraphs(){
 		}
 		cfData = cfHigh.concat(cfLow)
 
+		if(cfData.length == 0)
+			shapeData = []
+		else{
+			shapeData = [cfData]
+		}
+
 		var cfLine = d3.svg.line()
 			.x(function(d) { return xScale(d.ts.toDate()) })
 			.y(function(d) { return yScale(d.val) })
 
 		var l = svg.select("#dataGroup-rCSI")
 			.selectAll(".cfLinePath-rCSI-" + a)
-			.data([cfData])
+			.data(shapeData)
 		
 		l.exit().remove()
 		l.enter().append("path")
 			
-		l.style("stroke", "none")
-			.attr("class", "cfLinePath-rCSI-" + a)
+		l.attr("class", "cfLinePath-rCSI-" + a)
 			.attr("d", function(d) { return cfLine(d) + "Z"; })
+
+		l.style("stroke", "none")
+		 .style("fill",function(){
+		 	if(a == 0){return WFPcolours["WFPgrey-2"]}
+		 	if(a == 1){return WFPcolours["WFPBlue-1"]}
+		 })		
+		 .style("fill-opacity", "0.5")	
 
 		// Add the line
 		var line = d3.svg.line()
@@ -477,6 +691,11 @@ function updateGraphs(){
 		l.attr("class", "linePath-rCSI-" + a)
 			.attr("d", line)
 
+		l.style("stroke",function(){
+		 	if(a == 0){return WFPcolours["WFPgrey-4"]}
+		 	if(a == 1){return WFPcolours["WFPBlue"]}
+		 })
+		 .style("fill", "none")	
 
 		// Draw the circles
 		var c = svg.select("#dataGroup-rCSI")
@@ -491,31 +710,36 @@ function updateGraphs(){
 			.attr("cy", function(d){return yScale(d.rCSI.mean)})
 			.attr("r", "3")
 
+		c.style("fill", function(){
+			if(a == 0){return WFPcolours["WFPgrey-4"]}
+			if(a == 1){return WFPcolours["WFPBlue"]}
+		})
+		 .style("stroke", function(){
+			if(a == 0){return WFPcolours["WFPgrey-4"]}
+			if(a == 1){return WFPcolours["WFPBlue"]}
+		})
+
 		if(a==0){
 			c.on("mouseover", function(d) { 
 				updatePopupADM0("rCSI",d)
 				d3.select(this)
-					.style("fill", "orange")
-					.style("stroke", "orange"); 
+					.classed("circSelected", true); 
 			})
 			.on("mouseout",  function(d) { 
 				updatePopupADM1("rCSI",0)
 				d3.select(this)
-					.style("fill", "darkgrey")
-					.style("stroke", "darkgrey"); 
+					.classed("circSelected", false); 
 			});
 		} else {
 			c.on("mouseover", function(d) { 
 				updatePopupADM0("rCSI",d)
 				d3.select(this)
-					.style("fill", "orange")
-					.style("stroke", "orange"); 
+					.classed("circSelected", true); 
 			})
 			.on("mouseout",  function(d) { 
 				updatePopupADM1("rCSI",0)
 				d3.select(this)
-					.style("fill", "green")
-					.style("stroke", "green"); 
+					.classed("circSelected", false); 
 			});
 		}
 
@@ -536,6 +760,21 @@ function updatePopupADM1(name,d){
 }
 
 function updatePopup(name,d,a){
+	//Find the width and height of the graphs
+    var svgHolder = d3.select("#FCSgraph");
+    width = svgHolder.node().getBoundingClientRect().width;
+        
+    var svgElem = d3.select("#svgFCS")
+        .attr("width", width)
+
+    var svgTop = svgElem.node().getBoundingClientRect().top
+    var holderBottom = svgHolder.node().getBoundingClientRect().bottom;
+   	height = holderBottom - svgTop;
+
+    width = width - margin.left - margin.right,
+    height = height - margin.top - margin.bottom;
+
+
 	// Updates the popup with data for the hovered / selected item
 	if(name=="FCG_1"){
 		name = "FCG==1"
@@ -576,7 +815,7 @@ function updatePopup(name,d,a){
 	} else {
 		// Update the popup data
 		val = d[name].mean
-		valText = name + ": " + d[name].mean
+		valText = name + ": " + (Math.round(val * 100)) / 100
 		ts = d.ts
 
 		pointX = xScale(ts.toDate())
