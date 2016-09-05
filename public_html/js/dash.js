@@ -181,7 +181,7 @@ function updateGraphs(){
 	//Set the graph titles
 	var graphTitle = ""
 
-	if(APIresponse["ADM1"].length > 0 ){
+	if(APIresponse["ADM0"].length > 0 ){
 		graphTitle += APIresponse["ADM0"][0]["ADM0_NAME"]
 	} else {
 		graphTitle = "No country selected"
