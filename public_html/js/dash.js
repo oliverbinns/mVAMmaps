@@ -227,8 +227,9 @@ function updateGraphs(){
 				return d.ts >= dateSelection["start"] &&
 					d.ts <= dateSelection["end"]
 			})
-			minDate = s
-			maxDate = e
+			
+			minDate = moment.max(s, minDate)
+			maxDate = moment.min(e, maxDate)
 		}
 
 	}
