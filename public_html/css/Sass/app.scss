@@ -56,41 +56,6 @@ $WFPbackground: #FFFFFF;
 	position: absolute;
 }
 
-.region {
-	fill: #eeeeee;
-	stroke: #333333;
-	stroke-width: 0.5;
-}
-
-.regionHover {
-	fill: #aaaaaa;
-	stroke: #333333;
-	stroke-width: 0.5;
-}
-
-.regionSel {
-	fill: steelblue;
-	stroke: #333333;
-	stroke-width: 0.5;
-}
-
-.regionSelHover{
-	fill: darkblue;
-	stroke: #333333;
-	stroke-width: 0.5;
-}
-
-.axis {
-  font-size: 0.7em;
-  font-family: "Arial";
-  fill: $WFPtext;
-}
-
-.titleLabelText{
-	font-size: 14px;
-	color: $WFPgrey-2;
-}
-
 .popupText {
   font: 10px sans-serif;
 }
@@ -105,107 +70,9 @@ $WFPbackground: #FFFFFF;
 	stroke: orange;
 }
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: $WFPtext;
-  shape-rendering: crispEdges;
-}
-
-.horizontalGrid {
-	fill : none;
-	stroke : $WFPgrey-2;
-	stroke-width : 1px;
-}
-
-#mapHolder {
-	float: left;
-}
-
-#FCSgraph {
-	float: left;
-	font-style: "Arial";
-}
-
-.cfLinePath-FCS-0 {
-	fill: $WFPgrey-2;
-	fill-opacity: 0.5;
-}
-
-.cfLinePath-FCS-1 {
-	fill: $WFPBlue-1;
-	fill-opacity: 0.5;
-}
-
-.linePath-FCS-0{
-	fill: none;
-	stroke: $WFPgrey-4;
-}
-
-.linePath-FCS-1{
-	fill: none;
-	stroke: $WFPBlue;
-}
-
-.lineCircle-FCS-0 {
-	fill: $WFPgrey-4;
-	stroke: $WFPgrey-4;
-}
-
-.lineCircle-FCS-1 {
-	fill: $WFPBlue;
-	stroke: $WFPBlue;
-}
-
-
-
-.cfLinePath-rCSI-0 {
-	fill: $WFPgrey-2;
-	fill-opacity: 0.5;
-}
-
-.cfLinePath-rCSI-1 {
-	fill: $WFPBlue-1;
-	fill-opacity: 0.5;
-}
-
-.linePath-rCSI-0{
-	fill: none;
-	stroke: $WFPgrey-4;
-}
-
-.linePath-rCSI-1{
-	fill: none;
-	stroke: $WFPBlue;
-}
-
-.lineCircle-rCSI-0 {
-	fill: $WFPgrey-4;
-	stroke: $WFPgrey-4;
-}
-
-.lineCircle-rCSI-1 {
-	fill: $WFPBlue;
-	stroke: $WFPBlue;
-}
-
 .circSelected {
 	fill: $WFPorange;
 	stroke: $WFPorange;
-}
-
-
-.FCG_0 {
-	fill: $WFPbackground;
-}
-.FCG_1 {
-	fill: $WFPred;
-}
-.FCG_2 {
-	fill: $WFPyellow;
-}
-.FCG_3 {
-	fill: $WFPgreen;
 }
 
 .box-tools .chart-button { 

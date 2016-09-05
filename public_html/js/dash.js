@@ -43,10 +43,16 @@ function initGraphs(){
       		.attr("class", "x axis")
       		.attr("transform", "translate(0," + height + ")")
       		.attr("id", "xAxis-" + name)
+      		.style("font-size", "10px")
+      		.style("font-family", "Arial")
+      		.style("fill", WFPcolours["WFPtext"])
 
 		axGrp.append("g")
       		.attr("class", "y axis")
       		.attr("id", "yAxis-" + name)
+      		.style("font-size", "10px")
+      		.style("font-family", "Arial")
+      		.style("fill", WFPcolours["WFPtext"])
 
       	axGrp.append("g")
       		.attr("class", "axisLabel")
@@ -56,13 +62,21 @@ function initGraphs(){
 				.attr("y", 6)
 				.attr("dy", ".71em")
 				.style("text-anchor", "middle")
-				.text(name);
+				.text(name)
+				.style("font-size", "10px")
+      			.style("font-family", "Arial")
+      			.style("fill", WFPcolours["WFPtext"])
+      			.style("stroke", "none")
 
       	axGrp.append("g")
       		.attr("class", "titleLabel")
       		.attr("transform", "translate(" + (svgWidth/3) + ",-20)")
       		.append("text")
       			.attr("class","titleLabelText")
+				.style("font-size", "14px")
+      			.style("font-family", "Arial")
+      			.style("fill", WFPcolours["WFPgrey-2"])
+      			.style("stroke", "none")
 
 		// Create a group to hold the bars / lines
 		var dataGrp = svg.append("g")
@@ -233,7 +247,7 @@ function updateGraphs(){
 		.scale(xScale)
 		.orient("bottom")
 		.ticks(5)
-	.tickFormat(d3.time.format("%Y-%b"));
+		.tickFormat(d3.time.format("%Y-%b"));
 
 	var yAxis = d3.svg.axis()
 		.scale(yScale)
@@ -247,16 +261,29 @@ function updateGraphs(){
 
 	svg.select("#xAxis-FCG")
 		.call(xAxis)
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.sty
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
 
 	svg.select("#yAxis-FCG")
 		.call(yAxis)
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
 
 	var hLine = svg.select("#axGroup-FCG").select("#hlGroup-FCG")
 		.selectAll("line.horizontalGrid")
 		.data(yScale.ticks(10))
 
+		hLine.exit().remove()
 		hLine.enter().append("line")
-	        
 	    hLine.attr(
 	        {
 	            "class":"horizontalGrid",
@@ -264,7 +291,10 @@ function updateGraphs(){
 	            "x2" : width,
 	            "y1" : function(d){ return yScale(d);},
 	            "y2" : function(d){ return yScale(d);},
-	        });
+	        })
+	    hLine.style("fill", "none")
+	    	.style("stroke", WFPcolours["WFPgrey-2"])
+	    	.style("stroke-width", "1px")
 
 
 	// Calcuate the width of the bars
@@ -290,6 +320,13 @@ function updateGraphs(){
     	r.exit().remove()
 	    r.enter().append("rect")
 		r.attr("class", "FCG_" + rNo)
+			.style("fill", function(d){
+				if(rNo == 0){return WFPcolours["WFPbackground"]}
+				if(rNo == 1){return WFPcolours["WFPred"]}
+				if(rNo == 2){return WFPcolours["WFPyellow"]}
+				if(rNo == 3){return WFPcolours["WFPgreen"]}
+			})
+			.style("stroke", "none")
 		
 		r.attr("x", function(d) { 
 				return xScale(d.ts.toDate()) - (0.5 * barWidth); 
@@ -333,15 +370,29 @@ function updateGraphs(){
 
 	svg.select("#xAxis-FCS")
 		.call(xAxis)
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
 
 	svg.select("#yAxis-FCS")
 		.call(yAxis)
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
 
-	svg.select("#axGroup-FCS").select("#hlGroup-FCS")
+	var hLine = svg.select("#axGroup-FCS").select("#hlGroup-FCS")
 		.selectAll("line.horizontalGrid")
-		.data(yScale.ticks(10)).enter()
-	    .append("line")
-	        .attr(
+		.data(yScale.ticks(10))
+
+		hLine.exit().remove()
+		hLine.enter().append("line")
+	    hLine.attr(
 	        {
 	            "class":"horizontalGrid",
 	            "x1" : 0,
@@ -349,6 +400,9 @@ function updateGraphs(){
 	            "y1" : function(d){ return yScale(d);},
 	            "y2" : function(d){ return yScale(d);},
 	        });
+	   	hLine.style("fill", "none")
+	    	.style("stroke", WFPcolours["WFPgrey-2"])
+	    	.style("stroke-width", "1px")
 
 
 	// Add the confidence interval shapes
@@ -393,9 +447,15 @@ function updateGraphs(){
 		l.exit().remove()
 		l.enter().append("path")
 			
-		l.style("stroke", "none")
-			.attr("class", "cfLinePath-FCS-" + a)
+		l.attr("class", "cfLinePath-FCS-" + a)
 			.attr("d", function(d) { return cfLine(d) + "Z"; })
+
+		l.style("stroke", "none")
+		 .style("fill",function(){
+		 	if(a == 0){return WFPcolours["WFPgrey-2"]}
+		 	if(a == 1){return WFPcolours["WFPBlue-1"]}
+		 })		
+		 .style("fill-opacity", "0.5")	
 
 		// Add the line
 		var line = d3.svg.line()
@@ -412,6 +472,11 @@ function updateGraphs(){
 		l.attr("class", "linePath-FCS-" + a)
 			.attr("d", line)
 
+		l.style("stroke",function(){
+		 	if(a == 0){return WFPcolours["WFPgrey-4"]}
+		 	if(a == 1){return WFPcolours["WFPBlue"]}
+		 })
+		 .style("fill", "none")	
 
 		// Draw the circles
 		var c = svg.select("#dataGroup-FCS")
@@ -425,6 +490,16 @@ function updateGraphs(){
 		c.attr("cx", function(d){return xScale(d.ts.toDate())})
 			.attr("cy", function(d){return yScale(d.FCS.mean)})
 			.attr("r", "3")
+
+		c.style("fill", function(){
+			if(a == 0){return WFPcolours["WFPgrey-4"]}
+			if(a == 1){return WFPcolours["WFPBlue"]}
+		})
+		 .style("stroke", function(){
+			if(a == 0){return WFPcolours["WFPgrey-4"]}
+			if(a == 1){return WFPcolours["WFPBlue"]}
+		})
+
 
 		if(a==0){
 			c.on("mouseover", function(d) { 
@@ -472,23 +547,39 @@ function updateGraphs(){
 
 	svg.select("#xAxis-rCSI")
 		.call(xAxis)
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
 
 	svg.select("#yAxis-rCSI")
 		.call(yAxis)
-		.append("text")
+		.style("fill", "none")
+		.style("stroke", WFPcolours["WFPtext"])
+		.style("shape-rendering", "crispEdges")
+		.selectAll("text")
+			.style("fill", WFPcolours["WFPtext"])
+			.style("stroke", "none")
 
-	svg.select("#axGroup-rCSI").select("#hlGroup-rCSI")
+	var hLine = svg.select("#axGroup-rCSI").select("#hlGroup-rCSI")
 		.selectAll("line.horizontalGrid")
-		.data(yScale.ticks(10)).enter()
-	    .append("line")
-	        .attr(
+		.data(yScale.ticks(10))
+
+		hLine.exit().remove()
+		hLine.enter().append("line")
+	    hLine.attr(
 	        {
 	            "class":"horizontalGrid",
 	            "x1" : 0,
 	            "x2" : width,
 	            "y1" : function(d){ return yScale(d);},
 	            "y2" : function(d){ return yScale(d);},
-	        });
+	        })
+	   	hLine.style("fill", "none")
+	    	.style("stroke", WFPcolours["WFPgrey-2"])
+	    	.style("stroke-width", "1px")
 
 
 	// Add the confidence interval shape
@@ -528,9 +619,15 @@ function updateGraphs(){
 		l.exit().remove()
 		l.enter().append("path")
 			
-		l.style("stroke", "none")
-			.attr("class", "cfLinePath-rCSI-" + a)
+		l.attr("class", "cfLinePath-rCSI-" + a)
 			.attr("d", function(d) { return cfLine(d) + "Z"; })
+
+		l.style("stroke", "none")
+		 .style("fill",function(){
+		 	if(a == 0){return WFPcolours["WFPgrey-2"]}
+		 	if(a == 1){return WFPcolours["WFPBlue-1"]}
+		 })		
+		 .style("fill-opacity", "0.5")	
 
 		// Add the line
 		var line = d3.svg.line()
@@ -547,6 +644,11 @@ function updateGraphs(){
 		l.attr("class", "linePath-rCSI-" + a)
 			.attr("d", line)
 
+		l.style("stroke",function(){
+		 	if(a == 0){return WFPcolours["WFPgrey-4"]}
+		 	if(a == 1){return WFPcolours["WFPBlue"]}
+		 })
+		 .style("fill", "none")	
 
 		// Draw the circles
 		var c = svg.select("#dataGroup-rCSI")
@@ -560,6 +662,15 @@ function updateGraphs(){
 		c.attr("cx", function(d){return xScale(d.ts.toDate())})
 			.attr("cy", function(d){return yScale(d.rCSI.mean)})
 			.attr("r", "3")
+
+		c.style("fill", function(){
+			if(a == 0){return WFPcolours["WFPgrey-4"]}
+			if(a == 1){return WFPcolours["WFPBlue"]}
+		})
+		 .style("stroke", function(){
+			if(a == 0){return WFPcolours["WFPgrey-4"]}
+			if(a == 1){return WFPcolours["WFPBlue"]}
+		})
 
 		if(a==0){
 			c.on("mouseover", function(d) { 

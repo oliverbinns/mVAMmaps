@@ -28,8 +28,8 @@
 
 				                <!-- the first span is for the bootstrap modal window used for chart info -->
 				                <span class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#FCGModal" title="View information about the chart"><i class="fa fa-info-circle"></i></span>
-				                <span id="btnSaveRfhPng" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Save as PNG"><i class="fa fa-file-photo-o"></i></span>
-				                <span id="btnDownloadRfhCsv" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Download CSV data"><i class="fa fa-download"></i></span>
+				                <span id="btnSaveRfhPng" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Save as PNG" onclick="prepPNG('FCG')"><i class="fa fa-file-photo-o"></i></span>
+				                <span id="btnDownloadRfhCsv" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Download CSV data" onclick="downLoadCSV('FCG')"><i class="fa fa-download"></i></span>
 				            </div>
 				        	<!-- End of tools box -->
 
@@ -52,8 +52,8 @@
 
 				                <!-- the first span is for the bootstrap modal window used for chart info -->
 				                <span class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#FCSModal" title="View information about the chart"><i class="fa fa-info-circle"></i></span>
-				                <span id="btnSaveRfhPng" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Save as PNG"><i class="fa fa-file-photo-o"></i></span>
-				                <span id="btnDownloadRfhCsv" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Download CSV data"><i class="fa fa-download"></i></span>
+				                <span id="btnSaveRfhPng" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Save as PNG" onclick="prepPNG('FCS')"><i class="fa fa-file-photo-o"></i></span>
+				                <span id="btnDownloadRfhCsv" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Download CSV data" onclick="downLoadCSV('FCS')"><i class="fa fa-download"></i></span>
 				            </div>
 				        	<!-- End of tools box -->
 
@@ -79,8 +79,8 @@
 
 				                <!-- the first span is for the bootstrap modal window used for chart info -->
 				                <span class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#rCSIModal" title="View information about the chart"><i class="fa fa-info-circle"></i></span>
-				                <span id="btnSaveRfhPng" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Save as PNG"><i class="fa fa-file-photo-o"></i></span>
-				                <span id="btnDownloadRfhCsv" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Download CSV data"><i class="fa fa-download"></i></span>
+				                <span id="btnSaveRfhPng" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Save as PNG" onclick="prepPNG('rCSI')"><i class="fa fa-file-photo-o"></i></span>
+				                <span id="btnDownloadRfhCsv" class="btn btn-primary btn-sm pull-right chart-button" data-toggle="tooltip" title="Download CSV data"><i class="fa fa-download" onclick="downLoadCSV('rCSI')"></i></span>
 				            </div>
 				        	<!-- End of tools box -->
 
@@ -156,9 +156,12 @@
 		  </div><!-- /.modal-dialog -->
 		</div><!-- /.modal -->
 
+	
 
 
 	</body>
+
+	<canvas id="hiddenPNGcanvas" style="display:none;"></canvas>
 
 	<!-- Load vendor scripts -->
 	<script src="js/vendor/d3.min.js"></script>
