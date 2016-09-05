@@ -1,6 +1,6 @@
 // Dashboard control functions
 
-function loadDashboard(adm0ID, adm1ID) {
+function loadDashboard(adm0ID, adm1ID, IDP, yearStart, monthStart, yearEnd, monthEnd) {
 	//Call the API t pull the requried data 
 	//(will call updateGraphs() when done)
 
@@ -8,6 +8,41 @@ function loadDashboard(adm0ID, adm1ID) {
 	opt = {}
 	opt["adm0"] = adm0ID
 	opt["adm1"] = adm1ID
+	opt["IDP"] = IDP
+
+	// Parse the dates
+	if(!yearStart | !monthStart | !yearEnd | !monthEnd){
+		//Incomplete dates
+		dateSelection["start"] = null
+		dateSelection["end"] = null
+	} else {
+		var s = yearStart + "-" + pad(monthStart,2,0) + "-01T00:00:00"
+		var e = yearEnd + "-" + pad(monthEnd,2,0) + "-01T00:00:00"
+		dateSelection["start"] = moment.utc(s)
+		dateSelection["end"] = moment.utc(e)
+	}
+
+	if(IDP==true){
+		opt["adm1"] = null
+	}
+
+	//Reset the API status (invalidate caches)
+	APIstatus["ADM0"]["status"] = 'in progress'
+	APIstatus["ADM1"]["status"] = 'in progress'
+	
+	APIresponse["ADM0"] = []
+	APIresponse["ADM1"] = []
+
+	APIstatus["ADM0"] = {
+		"status": 0,
+		"page": 0,
+		"regName": null
+	}
+	APIstatus["ADM1"] = {
+		"status": 0,
+		"page": 0,
+		"regName": null
+	}
 	
 	//Call the API function (see io.js)
 	APIpull(opt)
@@ -162,7 +197,6 @@ function updateGraphs(){
 	var APIdates = []
 	for(var a=0;a<=1;a++){
 		for (var i = 0; i < APIresponse["ADM"+a].length; i++) {
-			//Convert to a moment timestamp
 			APIresponse["ADM"+a][i].ts = moment.utc(APIresponse["ADM"+a][i].SvyDate)
 			APIdates.push(APIresponse["ADM"+a][i].ts)
 		}
@@ -172,7 +206,7 @@ function updateGraphs(){
 	maxDate = moment.max(APIdates)
 
 	// Filter the API response as necessary
-	var APIfilt = {}
+	APIfilt = {}
 	APIfilt.ADM0=[]
 	APIfilt.ADM1=[]
 	
@@ -184,6 +218,19 @@ function updateGraphs(){
 					d.Variable == "rCSI" ||
 					d.Variable == "FCS";
 		})
+
+		var s = dateSelection["start"]
+		var e = dateSelection["end"]
+
+		if(s != null && e != null){
+			APIfilt["ADM"+a] = APIfilt["ADM"+a].filter(function(d){
+				return d.ts >= dateSelection["start"] &&
+					d.ts <= dateSelection["end"]
+			})
+			minDate = s
+			maxDate = e
+		}
+
 	}
 
 	// TO-DO date filtering based on user control
@@ -263,7 +310,6 @@ function updateGraphs(){
 		.call(xAxis)
 		.style("fill", "none")
 		.style("stroke", WFPcolours["WFPtext"])
-		.sty
 		.style("shape-rendering", "crispEdges")
 		.selectAll("text")
 			.style("fill", WFPcolours["WFPtext"])

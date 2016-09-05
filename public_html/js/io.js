@@ -7,6 +7,7 @@ function APIpull(opt){
 		opt - required object of API arguments:
 		opt["adm0"] - required string with Admin level 0 (country) name
 		opt["adm1"] - option string with region name
+		opt["IDP"] - true / false for IDPs, if true, opt["adm1"] must be null
 
 	Note that this function is recursive, as multiple calls to the API
 	may be required (for getting ADM0 and ADM1 data and for data paging)
@@ -25,12 +26,6 @@ function APIpull(opt){
 			"status":"done" | "in progress",
 			"regName": "region name",
 			"page": int (paging number)
-		}
-	for general:
-		{
-			"timeStart": "",
-			"timeEnd": "",
-			"IDP": False
 		}
 
 	*/
@@ -93,6 +88,7 @@ function APIpull(opt){
 			escapedName = opt["adm1"].replace(/[']/g,"''")
 			qs = qs + " AND AdminStrata = '" + escapedName + "'"
 			qs = qs + " AND IndpVars = 'AdminUnits'"
+
 		}
 
 
@@ -114,8 +110,13 @@ function APIpull(opt){
 		// Build ADM0 (entire country) query string (and set query type)
 		qType = "ADM0"
 		qs = "ADM0_NAME = '" + opt["adm0"] + "'"
-		qs = qs + " AND AdminStrata = '" + opt["adm0"] + "'"
-		qs = qs + " AND IndpVars = 'ADM0'"
+
+		if(opt["IDP"]){
+			qs = qs + "AND IndpVars = 'IDP_YN' AND Demographic = 'Y'"
+		} else {
+			qs = qs + " AND AdminStrata = '" + opt["adm0"] + "'"
+			qs = qs + " AND IndpVars = 'ADM0'"
+		}
 	}
 
 

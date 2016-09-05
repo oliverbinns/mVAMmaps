@@ -21,11 +21,10 @@ var APIstatus = {}
 		"page": 0,
 		"regName": null
 	}
-	APIstatus["general"] = {
-		"timeStart": "",
-		"timeEnd": "",
-		"IDP": false
-	}
+
+var dateSelection = {}
+dateSelection["start"] = null
+dateSelection["end"] = null
 
 APIpage = 0
 regioMeta = {}
@@ -54,4 +53,11 @@ function debounce(fn, delay) {
 			fn.apply(context, args);
 		}, delay);
 	};
+}
+
+//Zero-padding function
+function pad(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
