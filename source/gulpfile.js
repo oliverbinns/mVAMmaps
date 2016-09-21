@@ -58,6 +58,8 @@ gulp.task('CDNfallback', function(){
 			{src: sPath + "file-saver/FileSaver.min.js",
 			tgt:  tPath},
 			{src: sPath + "papaparse/papaparse.min.js",
+			tgt:  tPath},
+			{src: sPath + "jquery-ui/jquery-ui.min.js",
 			tgt:  tPath}
 		];
 
