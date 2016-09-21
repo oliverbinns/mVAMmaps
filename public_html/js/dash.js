@@ -1,8 +1,15 @@
 // Dashboard control functions
 
-function loadDashboard(adm0ID, adm1ID, IDP, yearStart, monthStart, yearEnd, monthEnd) {
-	//Call the API t pull the requried data 
+function loadDashboard(adm0ID, adm1ID, IDP) {
+	//Call the API to pull the requried data 
 	//(will call updateGraphs() when done)
+
+	//Get the time information from the slider control
+	var timeSiderVals = getTimeSliderVals(),
+		yearStart = timeSiderVals["yearStart"]
+		monthStart = timeSiderVals["monthStart"]
+		yearEnd = timeSiderVals["yearEnd"]
+		monthEnd = timeSiderVals["monthEnd"]
 
 	//Form options object
 	opt = {}

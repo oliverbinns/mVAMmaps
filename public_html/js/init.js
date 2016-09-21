@@ -37,10 +37,14 @@ popHeight = 25
 popGap = 5
 popTextSize = 10
 
+// UI time slider selector limit
+minSelectableDate = moment("2015-07-01").toDate()
+
 // Initial run script (document load)
 $(document).ready(function () {
 	console.log("Ready")
 	initGraphs()
+	initTimeSlider()
 });
 
 //Window resize debouncing function
