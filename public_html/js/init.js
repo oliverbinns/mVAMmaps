@@ -65,3 +65,9 @@ function pad(n, width, z) {
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
+
+// IDP toggle hook
+$('#IDPtoggle').change(function () {
+	var IDPstate = $("#IDPtoggle").prop("checked")
+    console.log("IDP toggle switch changed to " + IDPstate)
+ });

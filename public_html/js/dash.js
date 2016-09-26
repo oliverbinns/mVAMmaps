@@ -1,6 +1,6 @@
 // Dashboard control functions
 
-function loadDashboard(adm0ID, adm1ID, IDP) {
+function loadDashboard(adm0ID, adm1ID) {
 	//Call the API to pull the requried data 
 	//(will call updateGraphs() when done)
 
@@ -10,6 +10,9 @@ function loadDashboard(adm0ID, adm1ID, IDP) {
 		monthStart = timeSiderVals["monthStart"]
 		yearEnd = timeSiderVals["yearEnd"]
 		monthEnd = timeSiderVals["monthEnd"]
+
+	// Get the IDP toggle status
+	var IDP = $("#IDPtoggle").prop("checked")
 
 	//Form options object
 	opt = {}
