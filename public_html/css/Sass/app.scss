@@ -25,6 +25,12 @@ $WFPgreen:		#B3DE62;
 $WFPtext: 		#404040;
 $WFPbackground: #FFFFFF;
 
+//Boostrap fixes
+#FCGgraph, #FCSgraph, #rCSIgraph {
+ 	line-height: 0
+}
+
+
 #dashBoard {
 
     margin-left: 100px;

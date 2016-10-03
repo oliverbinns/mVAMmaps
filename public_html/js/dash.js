@@ -180,6 +180,9 @@ function updateGraphs(){
     var svgElem = d3.select("#svgFCS")
         .attr("width", width)
 
+    d3.select("#svgFCG").attr("width", width)
+    d3.select("#svgrCSI").attr("width", width)
+
     var svgTop = svgElem.node().getBoundingClientRect().top
     var holderBottom = svgHolder.node().getBoundingClientRect().bottom;
    	height = holderBottom - svgTop;
@@ -277,6 +280,32 @@ function updateGraphs(){
 	  			APIts["ADM"+a][ix][varName]["confHigh"] = varConfHigh
 	  			APIts["ADM"+a][ix][varName]["confLow"] = varConfLow
 	  		}
+		}
+	}
+
+	// Check for missing items in the time series
+	for(var i=0; i<APIts.ADM0.length;i++){
+		for(var j=1; j < 4; j++){
+			if(typeof(APIts.ADM0[i]["FCG==" + j]) == 'undefined'){
+				APIts.ADM0[i]["FCG==" + j]= {}
+				APIts.ADM0[i]["FCG==" + j].mean = null
+				APIts.ADM0[i]["FCG==" + j].confHigh = 0
+				APIts.ADM0[i]["FCG==" + j].confLow = 0
+			}
+		}
+
+		if(typeof(APIts.ADM0[i]["FCS"]) == 'undefined'){
+			APIts.ADM0[i]["FCS"]= {}
+			APIts.ADM0[i]["FCS"].mean = null
+			APIts.ADM0[i]["FCS"].confHigh = 0
+			APIts.ADM0[i]["FCS"].confLow = 0
+		}
+
+		if(typeof(APIts.ADM0[i]["rCSI"]) == 'undefined'){
+			APIts.ADM0[i]["rCSI"]= {}
+			APIts.ADM0[i]["rCSI"].mean = null
+			APIts.ADM0[i]["rCSI"].confHigh = 0
+			APIts.ADM0[i]["rCSI"].confLow = 0
 		}
 	}
 
@@ -786,12 +815,17 @@ function updatePopup(name,d,a){
 
 
 	// Updates the popup with data for the hovered / selected item
+	var nameText = name
+
 	if(name=="FCG_1"){
 		name = "FCG==1"
+		nameText = "FCG 1"
 	} else if(name=="FCG_2"){
 		name = "FCG==2"
+		nameText = "FCG 2"
 	} else if(name=="FCG_3"){
 		name = "FCG==3"
+		nameText = "FCG 3"
 	}
 
 	if(name.indexOf("FCG") > -1){
@@ -825,7 +859,13 @@ function updatePopup(name,d,a){
 	} else {
 		// Update the popup data
 		val = d[name].mean
-		valText = name + ": " + (Math.round(val * 100)) / 100
+		valText = (Math.round(val * 100)) / 100
+		if(nameText ==  "FCG 1" || nameText ==  "FCG 2" || nameText ==  "FCG 3"){
+			valText = Math.round(valText * 100)
+			valText = valText + "%" 
+		}
+
+		valText = nameText + ": " + valText
 		ts = d.ts
 
 		pointX = xScale(ts.toDate())
